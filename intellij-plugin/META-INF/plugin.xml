@@ -1,12 +1,14 @@
 <idea-plugin version="2">
-	<id>org.dreamscale.flow</id>
-	<name>Torchie Flow Metrics</name>
-	<description>Capture automated flow metrics from your developer experience as you navigate around the code,
-		modify code, and execute tests.  This plugin is designed to work with Torchie Shell.
-		For more information, see dreamscale.io
+	<id>net.twilightcity.flow</id>
+	<name>Idea Flow Metrics</name>
+	<description>Capture automated "Idea Flow" activity data from your developer experience as you navigate around the code,
+		modify code, and execute tests.  IDE activity is spooled to an active.flow file in your ~/.flow/com.jetbrains.intellij directory.
+		This plugin is open source, under an Apache 2 License.
+
+		It's designed to work with Twilight City self-organized learning platform, to provide Idea Flow Metrics for study by the team.
 	</description>
-	<version>0.26</version>
-	<vendor>DreamScale, Inc.</vendor>
+	<version>0.27</version>
+	<vendor>Twilight City, Inc.</vendor>
 	<depends>com.intellij.modules.platform</depends>
 	<depends>com.intellij.modules.lang</depends>
 
@@ -19,44 +21,44 @@
 
 	<application-components>
 		<component>
-			<implementation-class>org.dreamscale.flow.intellij.IdeaFlowApplicationComponent</implementation-class>
+			<implementation-class>net.twilightcity.flow.intellij.IdeaFlowApplicationComponent</implementation-class>
 		</component>
 	</application-components>
 
 	<project-components>
 		<component>
-			<implementation-class>org.dreamscale.flow.intellij.IdeaFlowProjectComponent</implementation-class>
+			<implementation-class>net.twilightcity.flow.intellij.IdeaFlowProjectComponent</implementation-class>
 		</component>
 	</project-components>
 
 	<actions>
-		<action id="org.dreamscale.flow.Snippet" class="org.dreamscale.flow.intellij.action.event.CreateSnippetEvent" text="Send Snippet to Torchie"
-                description="Sends a snippet from the currently selected text to Torchie" icon="/icons/take_note.png">
+		<action id="net.twilightcity.flow.Snippet" class="net.twilightcity.flow.intellij.action.event.CreateSnippetEvent" text="Send Snippet to TC"
+				description="Sends the currently selected snippet to the active Twilight City window" icon="/icons/take_note.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="meta shift s"/>
 		</action>
 
-		<action id="org.dreamscale.flow.FlushBatch" class="org.dreamscale.flow.intellij.action.event.FlushBatchEvent" text="Flush current batch"
-                description="Flushes the current batch of changes to the server"
-				icon="/icons/torchie.png">
+		<action id="net.twilightcity.flow.FlushBatch" class="net.twilightcity.flow.intellij.action.event.FlushBatchEvent" text="Upload Idea Flow"
+				description="Flushes all the most recent Idea Flow activity to the server"
+				icon="/icons/upload_flow_icon.svg">
 		</action>
 
-		<group id="org.dreamscale.flow.MainToolBar" text="Flow Group" description="Flow action group">
+		<group id="net.twilightcity.flow.MainToolBar" text="Flow Group" description="Flow action group">
 			<add-to-group group-id="MainToolBar" anchor="first"/>
-			<reference ref="org.dreamscale.flow.FlushBatch"/>
+			<reference ref="net.twilightcity.flow.FlushBatch"/>
 			<separator/>
 		</group>
 
-		<group id="org.dreamscale.flow.EditorPopupMenu">
+		<group id="net.twilightcity.flow.EditorPopupMenu">
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 			<add-to-group group-id="ConsoleEditorPopupMenu" anchor="last"/>
 			<separator/>
-			<reference ref="org.dreamscale.flow.Snippet"/>
+			<reference ref="net.twilightcity.flow.Snippet"/>
 		</group>
         
-        <group id="org.dreamscale.flow.DebuggerPopupMenu">
+        <group id="net.twilightcity.flow.DebuggerPopupMenu">
             <add-to-group group-id="XDebugger.Watches.Tree.Popup" anchor="last"/>
             <separator/>
-            <reference ref="org.dreamscale.flow.Snippet"/>
+            <reference ref="net.twilightcity.flow.Snippet"/>
         </group>
 
 	</actions>

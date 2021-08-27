@@ -10,7 +10,7 @@ repositories {
 	mavenLocal()
 	jcenter()
 	maven {
-		url "https://dl.bintray.com/dreamscale-io/maven-public"
+		url "http://nexus.twilightcity.net:8081/repository/public"
 	}
 }
 
@@ -20,10 +20,10 @@ configurations.all {
 }
 
 dependencies {
-	compile "org.dreamscale:gridtime-rest-client:${gridtimeVersion}"
+	compile "net.twilightcity:gridtime-rest-client:${gridtimeVersion}"
 	compileOnly "org.projectlombok:lombok:1.18.2"
 
-	testCompile "org.dreamscale:gridtime-rest-client-test:${gridtimeVersion}"
+	testCompile "net.twilightcity:gridtime-rest-client-test:${gridtimeVersion}"
 	testCompile "org.slf4j:slf4j-api:1.7.12"
 	testCompile "com.google.guava:guava:18.0"
 	testCompile "org.reflections:reflections:0.9.9-RC1"
