@@ -7,7 +7,7 @@
 
 		Designed to work with FlowInsight learning tools, available at flowinsight.com.
 	</description>
-	<version>0.28</version>
+	<version>0.30</version>
 	<vendor>Twilight City, Inc.</vendor>
 	<depends>com.intellij.modules.platform</depends>
 	<depends>com.intellij.modules.lang</depends>
