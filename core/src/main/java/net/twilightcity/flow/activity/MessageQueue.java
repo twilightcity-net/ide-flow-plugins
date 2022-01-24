@@ -35,12 +35,13 @@ public class MessageQueue {
         messageLogger.flush();
     }
 
-    public void pushEditorActivity(Long durationInSeconds, String filePath, boolean isModified) {
-        pushEditorActivity(durationInSeconds, timeService.now(), filePath, isModified);
+    public void pushEditorActivity(Long durationInSeconds, String filePath, String module, boolean isModified) {
+        pushEditorActivity(durationInSeconds, timeService.now(), filePath, module, isModified);
     }
 
-    public void pushEditorActivity(Long durationInSeconds, LocalDateTime endTime, String filePath, boolean isModified) {
+    public void pushEditorActivity(Long durationInSeconds, LocalDateTime endTime, String filePath, String module, boolean isModified) {
         NewEditorActivityDto activity = NewEditorActivityDto.builder()
+                .module(module)
                 .endTime(endTime)
                 .durationInSeconds(durationInSeconds)
                 .filePath(filePath)

@@ -7,6 +7,8 @@ import net.twilightcity.gridtime.api.flow.batch.NewFlowBatchDto
 import net.twilightcity.gridtime.api.flow.event.EventType
 import net.twilightcity.gridtime.client.FlowClient
 import org.dreamscale.exception.NotFoundException
+import net.twilightcity.time.MockTimeService
+import net.twilightcity.flow.Logger
 import spock.lang.Specification
 
 import java.time.LocalDateTime
@@ -16,7 +18,7 @@ class TestBatchPublisher extends Specification {
     FlowPublisher flowPublisher
     File tempDir
     JSONConverter jsonConverter = new JSONConverter()
-    net.twilightcity.time.MockTimeService timeService = new net.twilightcity.time.MockTimeService()
+    MockTimeService timeService = new MockTimeService()
 
     FlowClient mockFlowClient
 
@@ -25,7 +27,7 @@ class TestBatchPublisher extends Specification {
         tempDir.deleteDir()
         tempDir.mkdirs()
 
-        net.twilightcity.flow.Logger logger = Mock(net.twilightcity.flow.Logger)
+        Logger logger = Mock(Logger)
         flowPublisher = new FlowPublisher(tempDir, logger, timeService)
 
         mockFlowClient = Mock(FlowClient)
@@ -55,6 +57,7 @@ class TestBatchPublisher extends Specification {
 
     private NewEditorActivityDto createEditorActivity() {
         NewEditorActivityDto.builder()
+                .module("module")
                 .endTime(LocalDateTime.now())
                 .durationInSeconds(5)
                 .filePath("hello.txt")

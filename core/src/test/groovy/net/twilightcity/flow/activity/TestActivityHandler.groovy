@@ -28,7 +28,7 @@ class TestActivityHandler extends Specification {
 
     void testStartEvent_ShouldNotCreateEditorActivity_IfNoPriorEvent() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module","file")
 
         then:
         assertNoMessages()
@@ -36,9 +36,9 @@ class TestActivityHandler extends Specification {
 
     void testStartEvent_ShouldNotCreateEditorActivity_IfSameEvent() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
 
         then:
         assertNoMessages()
@@ -46,9 +46,9 @@ class TestActivityHandler extends Specification {
 
     void testStartEvent_ShouldCreateEditorActivity_IfDifferentEvent() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
-        handler.startFileEvent("other")
+        handler.startFileEvent("module", "other")
 
         then:
         assert getMessage(0, NewEditorActivityDto).filePath == "file"
@@ -59,9 +59,9 @@ class TestActivityHandler extends Specification {
 
     void testStartEvent_ShouldNotCreateEditorActivity_IfShortDelay() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
         timeService.plusSeconds(DOES_NOT_PERSIST_ACTIVITY_DURATION_SECONDS)
-        handler.startFileEvent("other")
+        handler.startFileEvent("module", "other")
 
         then:
         assertNoMessages()
@@ -69,9 +69,9 @@ class TestActivityHandler extends Specification {
 
     void testStartEvent_ShouldEndCurrentEvent_IfNull() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
-        handler.startFileEvent(null)
+        handler.startFileEvent(null, null)
 
         then:
         assert getMessage(0, NewEditorActivityDto).filePath == "file"
@@ -80,7 +80,7 @@ class TestActivityHandler extends Specification {
 
     void testEndEvent_ShouldEndCurrentEvent_IfSameEvent() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
         handler.endFileEvent("file")
 
@@ -92,7 +92,7 @@ class TestActivityHandler extends Specification {
 
     void testEndEvent_ShouldNotEndCurrentEvent_IfDifferentEvent() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
         handler.endFileEvent("other")
 
@@ -102,7 +102,7 @@ class TestActivityHandler extends Specification {
 
     void testEndEvent_ShouldEndCurrentEvent_IfNull() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
         handler.endFileEvent(null)
 
@@ -112,7 +112,7 @@ class TestActivityHandler extends Specification {
 
     void testEndEvent_ShouldNotCreateEditorActivityWithModifiedTrue_IfActiveEventModifiedNotCalled() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
         handler.endFileEvent(null)
 
@@ -123,7 +123,7 @@ class TestActivityHandler extends Specification {
 
     void testEndEvent_ShouldCreateEditorActivityWithModifiedTrue_IfActiveEventModifiedCalled() {
         when:
-        handler.startFileEvent("file")
+        handler.startFileEvent("module", "file")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
         handler.fileModified("file")
         handler.endFileEvent(null)
@@ -162,11 +162,11 @@ class TestActivityHandler extends Specification {
     @Ignore
     void testDuplicateEvents_ShouldIncrementDurationOnExistingEditorActivityAndNotCreateNewActivity_IfShortActivityComesBetweenTwoSameActivities() {
         when:
-        handler.startFileEvent("file1")
+        handler.startFileEvent("module", "file1")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
-        handler.startFileEvent("file2")
+        handler.startFileEvent("module", "file2")
         timeService.plusSeconds(DOES_NOT_PERSIST_ACTIVITY_DURATION_SECONDS)
-        handler.startFileEvent("file3")
+        handler.startFileEvent("module", "file3")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
         handler.endFileEvent(null)
 
@@ -178,11 +178,11 @@ class TestActivityHandler extends Specification {
 
     void testDuplicateEvents_ShouldCreateNewEvent_IfShortActivityComesBetweenTwoActivitiesWithSameNameButDifferentInModifiedState() {
         when:
-        handler.startFileEvent("file1")
+        handler.startFileEvent("module", "file1")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
-        handler.startFileEvent("file2")
+        handler.startFileEvent("module", "file2")
         timeService.plusSeconds(DOES_NOT_PERSIST_ACTIVITY_DURATION_SECONDS)
-        handler.startFileEvent("file3")
+        handler.startFileEvent("module", "file3")
         timeService.plusSeconds(PERSISTABLE_ACTIVITY_DURATION_SECONDS)
         handler.fileModified("file1")
         handler.endFileEvent(null)

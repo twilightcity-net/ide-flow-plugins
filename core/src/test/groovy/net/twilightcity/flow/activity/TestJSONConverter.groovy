@@ -13,6 +13,7 @@ class TestJSONConverter extends Specification {
     def "toJSON/fromJSON SHOULD serialize/deserialize API types"() {
         given:
         NewEditorActivityDto editorActivity = NewEditorActivityDto.builder()
+                .module("module")
                 .endTime(LocalDateTime.now())
                 .durationInSeconds(5)
                 .filePath("hello.txt")

@@ -1,13 +1,13 @@
 <idea-plugin version="2">
 	<id>net.twilightcity.flow</id>
-	<name>Idea Flow Metrics</name>
-	<description>Capture automated "Idea Flow" activity data from your developer experience as you navigate around the code,
-		modify code, and execute tests.  IDE activity is spooled to an active.flow file in your ~/.flow/com.jetbrains.intellij directory.
+	<name>FlowInsight Metrics</name>
+	<description>Capture automated Flow activity data from your developer experience as you navigate around the code,
+		modify code, and execute tests.  IDE activity is spooled to an active .flow file in your ~/.flow/com.jetbrains.intellij directory.
 		This plugin is open source, under an Apache 2 License.
 
-		It's designed to work with Twilight City self-organized learning platform, to provide Idea Flow Metrics for study by the team.
+		Designed to work with FlowInsight learning tools, available at flowinsight.com.
 	</description>
-	<version>0.27</version>
+	<version>0.28</version>
 	<vendor>Twilight City, Inc.</vendor>
 	<depends>com.intellij.modules.platform</depends>
 	<depends>com.intellij.modules.lang</depends>
@@ -32,13 +32,13 @@
 	</project-components>
 
 	<actions>
-		<action id="net.twilightcity.flow.Snippet" class="net.twilightcity.flow.intellij.action.event.CreateSnippetEvent" text="Send Snippet to TC"
-				description="Sends the currently selected snippet to the active Twilight City window" icon="/icons/take_note.png">
+		<action id="net.twilightcity.flow.Snippet" class="net.twilightcity.flow.intellij.action.event.CreateSnippetEvent" text="Send Snippet to FlowInsight"
+				description="Sends the currently selected snippet to the active FlowInsight window" icon="/icons/take_note.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="meta shift s"/>
 		</action>
 
-		<action id="net.twilightcity.flow.FlushBatch" class="net.twilightcity.flow.intellij.action.event.FlushBatchEvent" text="Upload Idea Flow"
-				description="Flushes all the most recent Idea Flow activity to the server"
+		<action id="net.twilightcity.flow.FlushBatch" class="net.twilightcity.flow.intellij.action.event.FlushBatchEvent" text="Upload to FlowInsight"
+				description="Flushes all the most recent Flow activity to FlowInsight"
 				icon="/icons/upload_flow_icon.svg">
 		</action>
 

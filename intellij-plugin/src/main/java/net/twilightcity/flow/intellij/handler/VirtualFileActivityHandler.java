@@ -16,7 +16,8 @@ public class VirtualFileActivityHandler {
 
     public void startFileEvent(Project project, VirtualFile file) {
         String filePath = getFilePath(project, file);
-        activityHandler.startFileEvent(filePath);
+        String moduleName = getModuleName(project, file);
+        activityHandler.startFileEvent(moduleName, filePath);
     }
 
     public void endFileEvent(Project project, VirtualFile file) {
@@ -41,6 +42,17 @@ public class VirtualFileActivityHandler {
         return filePath;
     }
 
+    public static String getModuleName(Project project, VirtualFile file) {
+        Module module;
+        try {
+            module = ModuleUtil.findModuleForFile(file, project);
+        } catch (Exception | AssertionError ex) {
+            // ignore any issue resolving full file path and just default to file name
+            return "default";
+        }
+        return module.getName();
+    }
+
     public static String getFullFilePathOrDefault(VirtualFile file, Project project, String defaultFilePath) {
         Module module;
         try {
@@ -54,6 +66,9 @@ public class VirtualFileActivityHandler {
             VirtualFile moduleFile = module.getModuleFile();
             if (moduleFile != null) {
                 String moduleBasePath = moduleFile.getParent().getPath();
+                if (moduleBasePath.endsWith("/.idea")) {
+                    moduleBasePath = moduleBasePath.substring(0, moduleBasePath.indexOf("/.idea"));
+                }
                 if (file.getPath().startsWith(moduleBasePath)) {
                     return file.getPath().substring(moduleBasePath.length());
                 }

@@ -56,12 +56,12 @@ public class ActivityHandler {
                 long duration = activeFileActivity.getDurationInSeconds() - idleDuration.getSeconds();
                 if (duration > 0) {
                     LocalDateTime endTime = timeService.now().minusSeconds((int) idleDuration.getSeconds());
-                    messageQueue.pushEditorActivity(duration, endTime, activeFileActivity.filePath, activeFileActivity.modified);
+                    messageQueue.pushEditorActivity(duration, endTime, activeFileActivity.filePath, activeFileActivity.module, activeFileActivity.modified);
                 }
             }
             messageQueue.pushExternalActivity(idleDuration.getSeconds(), comment);
             if (activeFileActivity != null) {
-                activeFileActivity = createFileActivity(activeFileActivity.filePath);
+                activeFileActivity = createFileActivity(activeFileActivity.module, activeFileActivity.filePath);
             }
         }
     }
@@ -80,20 +80,20 @@ public class ActivityHandler {
         }
     }
 
-    public void startFileEvent(String filePath) {
+    public void startFileEvent(String moduleName, String filePath) {
         if (isDifferent(filePath)) {
             if (isOverActivityThreshold()) {
                 messageQueue.pushEditorActivity(activeFileActivity.getDurationInSeconds(),
-                                                activeFileActivity.filePath, activeFileActivity.modified);
+                                                activeFileActivity.filePath, activeFileActivity.module, activeFileActivity.modified);
             }
 
-            activeFileActivity = createFileActivity(filePath);
+            activeFileActivity = createFileActivity(moduleName, filePath);
         }
     }
 
     public void endFileEvent(String filePath) {
         if ((filePath == null) || isSame(filePath)) {
-            startFileEvent(null);
+            startFileEvent(null, null);
         }
     }
 
@@ -111,8 +111,8 @@ public class ActivityHandler {
         }
     }
 
-    private FileActivity createFileActivity(String filePath) {
-        return filePath == null ? null : new FileActivity(filePath, timeService, false);
+    private FileActivity createFileActivity(String moduleName, String filePath) {
+        return filePath == null ? null : new FileActivity(moduleName, filePath, timeService, false);
     }
 
 
@@ -144,12 +144,14 @@ public class ActivityHandler {
 
     private static class FileActivity {
 
+        private String module;
         private LocalDateTime time;
         private TimeService timeService;
         private String filePath;
         private boolean modified;
 
-        public FileActivity(String filePath, TimeService timeService, boolean modified) {
+        public FileActivity(String module, String filePath, TimeService timeService, boolean modified) {
+            this.module = module;
             this.filePath = filePath;
             this.timeService = timeService;
             this.time = timeService.now();
