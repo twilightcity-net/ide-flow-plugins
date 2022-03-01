@@ -43,14 +43,17 @@ public class VirtualFileActivityHandler {
     }
 
     public static String getModuleName(Project project, VirtualFile file) {
-        Module module;
+        Module module = null;
         try {
             module = ModuleUtil.findModuleForFile(file, project);
         } catch (Exception | AssertionError ex) {
             // ignore any issue resolving full file path and just default to file name
+        }
+        if (module != null) {
+            return module.getName();
+        } else {
             return "default";
         }
-        return module.getName();
     }
 
     public static String getFullFilePathOrDefault(VirtualFile file, Project project, String defaultFilePath) {
