@@ -5,9 +5,9 @@
 		modify code, and execute tests.  IDE activity is spooled to an active .flow file in your ~/.flow/com.jetbrains.intellij directory.
 		This plugin is open source, under an Apache 2 License.
 
-		Designed to work with FlowInsight learning tools, available at flowinsight.com.
+		Designed to work with FlowInsight learning tools, soon to be available at flowinsight.com.
 	</description>
-	<version>0.30</version>
+	<version>0.32</version>
 	<vendor>Twilight City, Inc.</vendor>
 	<depends>com.intellij.modules.platform</depends>
 	<depends>com.intellij.modules.lang</depends>
@@ -54,7 +54,7 @@
 			<separator/>
 			<reference ref="net.twilightcity.flow.Snippet"/>
 		</group>
-        
+
         <group id="net.twilightcity.flow.DebuggerPopupMenu">
             <add-to-group group-id="XDebugger.Watches.Tree.Popup" anchor="last"/>
             <separator/>

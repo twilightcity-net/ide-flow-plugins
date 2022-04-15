@@ -63,9 +63,9 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
             controller.start();
         } catch (Exception ex) {
             // TODO: this should be a message popup to the user
-            log.error("Disabling @torchie Flow Metrics Plugin due to controller initialization failure: " + ex.getMessage(), ex.getCause());
+            log.error("Disabling FlowInsight Metrics Plugin due to controller initialization failure: " + ex.getMessage(), ex.getCause());
         }
-         
+
         ApplicationListener applicationListener = new ApplicationListener(controller);
         appConnection = ApplicationManager.getApplication().getMessageBus().connect();
         appConnection.subscribe(ApplicationActivationListener.TOPIC, applicationListener);
@@ -81,7 +81,7 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
         }
     }
 
-    private static class ApplicationListener extends ApplicationActivationListener.Adapter {
+    private static class ApplicationListener implements ApplicationActivationListener {
 
         private DeactivationHandler deactivationHandler;
 
