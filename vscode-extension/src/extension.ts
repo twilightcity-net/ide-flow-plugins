@@ -23,11 +23,24 @@ export function activate(context: vscode.ExtensionContext) {
   // a document. This includes clicking on a file in the sidebar.
   let activeFileName = vscode.window.activeTextEditor?.document.fileName
   vscode.window.onDidChangeActiveTextEditor((editor) => {
+    // Could potentially use this to detect any file that was clicked on to
+    // view in VSCode, we can't guarantee the format can be seen in VSCode.
+    const activeTab = vscode.window.tabGroups.activeTabGroup.activeTab
+    if (activeTab) {
+      // TODO: Figure out exactly what types are possible here.
+      const activeFileName = (activeTab as any).input.uri.path
+      console.log('activeTab', activeFileName)
+    }
+
     const newFileName = editor?.document.fileName
     if (newFileName !== activeFileName) {
       activeFileName = newFileName
       console.log('didChangeActiveTextEditor', newFileName)
     }
+  })
+
+  vscode.window.tabGroups.onDidChangeTabs((tabs) => {
+    console.log('didChangeTabs', tabs)
   })
 
   // We can use onDidChangeWindowState to see when they lose focus of
