@@ -10,8 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vscode-extension.helloWorld"
+    "*"
   ],
+  "capabilities": {
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "We don't currently support tracking virtual workspaces"
+    }
+  },
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [

@@ -5,27 +5,39 @@ import * as vscode from 'vscode'
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log(
-    'Congratulations, your extension "vscode-extension" is now active!',
-  )
+  console.log('context', context)
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand(
-    'vscode-extension.helloWorld',
-    () => {
-      // The code you place here will be executed every time your command is executed
-      // Display a message box to the user
-      vscode.window.showInformationMessage(
-        'Hello World from FlowInsight VSCode Extension!',
-      )
+  // We can use onDidChangeTextDocument to count the number of changes made
+  // in a given time frame.
+  vscode.workspace.onDidChangeTextDocument(
+    (change) => {
+      console.log('change', change)
     },
+    null,
+    context.subscriptions,
   )
 
-  context.subscriptions.push(disposable)
+  // We can use onDidChangeActiveTextEditor to see when they click around
+  // between editors.
+  // NOTE: If they click on non text files, this event is called but without
+  // a document. This includes clicking on a file in the sidebar.
+  let activeFileName = vscode.window.activeTextEditor?.document.fileName
+  vscode.window.onDidChangeActiveTextEditor((editor) => {
+    const newFileName = editor?.document.fileName
+    if (newFileName !== activeFileName) {
+      activeFileName = newFileName
+      console.log('didChangeActiveTextEditor', newFileName)
+    }
+  })
+
+  // We can use onDidChangeWindowState to see when they lose focus of
+  // the VSCode window they are using.
+  // NOTE: It fired when I clicked on another VSCode window that wasn't
+  // the one running the extension. Also fired
+  // when I click on anything outside of the VSCode window.
+  vscode.window.onDidChangeWindowState(({focused}) => {
+    console.log('focused', focused)
+  })
 }
 
 // this method is called when your extension is deactivated
