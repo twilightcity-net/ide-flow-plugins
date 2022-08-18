@@ -12,10 +12,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MessageQueue {
 
@@ -23,8 +20,8 @@ public class MessageQueue {
     private MessageLogger messageLogger;
     private TimeService timeService;
 
-    public MessageQueue(FlowPublisher batchPublisher, TimeService timeService, ModuleManager moduleManager) {
-        this(new FileMessageLogger(batchPublisher, timeService), timeService, moduleManager);
+    public MessageQueue(TimeService timeService, ModuleManager moduleManager, File activeFlowFile) {
+        this(new FileMessageLogger(activeFlowFile), timeService, moduleManager);
     }
 
     public MessageQueue(MessageLogger messageLogger, TimeService timeService, ModuleManager moduleManager) {
@@ -103,28 +100,17 @@ public class MessageQueue {
 
 
     static class FileMessageLogger implements MessageLogger {
-        private TimeService timeService;
-        private FlowPublisher batchPublisher;
-        private Map<Long, File> activeMessageFiles = new HashMap<>();
+        private final File activeFlowFile;
 
         private final Object lock = new Object();
         private JSONConverter jsonConverter = new JSONConverter();
 
-        private LocalDateTime lastBatchTime;
-        private int messageCount;
-
-        private final int BATCH_TIME_LIMIT_IN_SECONDS = 30 * 60;
-        private final int BATCH_MESSAGE_LIMIT = 500;
-
-        FileMessageLogger(FlowPublisher batchPublisher, TimeService timeService) {
-            this.batchPublisher = batchPublisher;
-            this.timeService = timeService;
-
-            lastBatchTime = timeService.now();
+        FileMessageLogger(File activeFlowFile) {
+            this.activeFlowFile = activeFlowFile;
         }
 
         public void flush() {
-            startNewBatch();
+            //no-op since the FlowInsight app will be handling this now
         }
 
         public void writeMessage(Object message) {
@@ -132,12 +118,7 @@ public class MessageQueue {
                 String messageAsJson = jsonConverter.toJSON(message);
 
                 synchronized (lock) {
-                    if (isBatchThresholdReached()) {
-                        startNewBatch();
-                    }
-                    File file = batchPublisher.getActiveFile();
-                    appendLineToFile(file, messageAsJson);
-                    messageCount++;
+                    appendLineToFile(activeFlowFile, messageAsJson);
                 }
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
@@ -150,21 +131,7 @@ public class MessageQueue {
             }
         }
 
-        private boolean isBatchThresholdReached() {
-            Duration duration = Duration.between(lastBatchTime, timeService.now());
-            return messageCount > 0 && ((duration.getSeconds() > BATCH_TIME_LIMIT_IN_SECONDS) ||
-                    messageCount > BATCH_MESSAGE_LIMIT);
-        }
 
-        private void startNewBatch() {
-            synchronized (lock) {
-                batchPublisher.commitActiveFile();
-                activeMessageFiles.clear();
-
-                lastBatchTime = timeService.now();
-                messageCount = 0;
-            }
-        }
 
     }
 

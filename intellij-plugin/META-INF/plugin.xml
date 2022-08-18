@@ -1,13 +1,13 @@
 <idea-plugin version="2">
 	<id>net.twilightcity.flow</id>
 	<name>FlowInsight Metrics</name>
-	<description>Capture automated Flow activity data from your developer experience as you navigate around the code,
-		modify code, and execute tests.  IDE activity is spooled to an active .flow file in your ~/.flow/com.jetbrains.intellij directory.
+	<description>Capture automated Flow activity from your developer experience as you navigate around the code,
+		modify code, and execute tests.  IDE activity is spooled to an active .flow file in your ~/.flow/plugins/com.jetbrains.intellij directory.
 		This plugin is open source, under an Apache 2 License.
 
-		Designed to work with FlowInsight learning tools, soon to be available at flowinsight.com.
+		Designed to work with FlowInsight learning tools, available at flowinsight.com.
 	</description>
-	<version>0.32</version>
+	<version>0.33</version>
 	<vendor>Twilight City, Inc.</vendor>
 	<depends>com.intellij.modules.platform</depends>
 	<depends>com.intellij.modules.lang</depends>

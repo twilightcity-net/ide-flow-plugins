@@ -1,22 +1,21 @@
 package net.twilightcity.flow.controller;
 
-import net.twilightcity.flow.activity.ModuleManager;
-import net.twilightcity.gridtime.api.flow.event.EventType;
-import net.twilightcity.gridtime.api.flow.event.NewSnippetEventDto;
-import net.twilightcity.gridtime.api.flow.event.SnippetSourceType;
-import net.twilightcity.gridtime.client.FlowClient;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Request;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import net.twilightcity.flow.Logger;
+import net.twilightcity.flow.activity.ActivityHandler;
+import net.twilightcity.flow.activity.MessageQueue;
+import net.twilightcity.flow.activity.ModuleManager;
+import net.twilightcity.gridtime.api.flow.event.EventType;
+import net.twilightcity.gridtime.api.flow.event.NewSnippetEventDto;
+import net.twilightcity.gridtime.api.flow.event.SnippetSourceType;
+import net.twilightcity.gridtime.client.FlowClient;
 import net.twilightcity.time.LocalDateTimeService;
 import org.dreamscale.exception.ForbiddenException;
 import org.dreamscale.feign.DefaultFeignConfig;
-import net.twilightcity.flow.Logger;
-import net.twilightcity.flow.activity.ActivityHandler;
-import net.twilightcity.flow.activity.FlowPublisher;
-import net.twilightcity.flow.activity.MessageQueue;
 import org.dreamscale.jackson.ObjectMapperBuilder;
 import org.dreamscale.logging.RequestResponseLoggerFactory;
 
@@ -34,7 +33,6 @@ public class IFMController {
     private AtomicBoolean active = new AtomicBoolean(false);
     private ActivityHandler activityHandler;
     private MessageQueue messageQueue;
-    private FlowPublisher flowPublisher;
     private ModuleManager moduleManager;
     private FlowClient flowClient;
     private PushModificationActivityTimer pushModificationActivityTimer;
@@ -42,9 +40,8 @@ public class IFMController {
     public IFMController(Logger logger) {
         File ideaFlowDir = createFlowPluginDir();
         LocalDateTimeService timeService = new LocalDateTimeService();
-        flowPublisher = new FlowPublisher(ideaFlowDir, logger, timeService);
         moduleManager = new ModuleManager(logger, getModuleConfigFile());
-        messageQueue = new MessageQueue(flowPublisher, timeService, moduleManager);
+        messageQueue = new MessageQueue(timeService, moduleManager, getActiveFlowFile());
         activityHandler = new ActivityHandler(this, messageQueue, timeService);
         pushModificationActivityTimer = new PushModificationActivityTimer(activityHandler, 30);
     }
@@ -53,12 +50,20 @@ public class IFMController {
         return new File(System.getProperty("user.home"), ".flow");
     }
 
+    private File getPluginsDir() {
+        return new File(getFlowDir(), "plugins");
+    }
+
     private File getFlowPluginDir() {
-        return new File(getFlowDir(), "com.jetbrains.intellij");
+        return new File(getPluginsDir(), "com.jetbrains.intellij");
     }
 
     private File getModuleConfigFile() {
         return new File(getFlowPluginDir(), "modules.json");
+    }
+
+    private File getActiveFlowFile() {
+        return new File(getFlowPluginDir(), "active.flow");
     }
 
     private File createFlowPluginDir() {
@@ -81,7 +86,6 @@ public class IFMController {
                 flowClient.authPing();
             } catch (ForbiddenException ex) {
                 flowClient = createFlowClient();
-                flowPublisher.setFlowClient(flowClient);
             }
             try {
                 flowClient.authPing();
@@ -89,7 +93,6 @@ public class IFMController {
                 throw new RuntimeException("Access denied, verify your API key is correct");
             }
             messageQueue.flush();
-            flowPublisher.flush();
         }
     }
 
@@ -105,7 +108,6 @@ public class IFMController {
         if (active.get() == false) {
             flowClient = createFlowClient();
             pushModificationActivityTimer.start();
-            flowPublisher.start(flowClient);
             active.set(true);
         }
     }

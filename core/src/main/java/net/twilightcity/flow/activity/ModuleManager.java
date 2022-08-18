@@ -101,22 +101,52 @@ public class ModuleManager {
         }
     }
 
-
-    @Getter
-    @Setter
     public static class ModuleConfigSet {
         private List<ModuleConfig> modules;
         private List<String> disabled;
 
+        public List<ModuleConfig> getModules() {
+            return modules;
+        }
+
+        public void setModules(List<ModuleConfig> modules) {
+            this.modules = modules;
+        }
+
+        public List<String> getDisabled() {
+            return disabled;
+        }
+
+        public void setDisabled(List<String> disabled) {
+            this.disabled = disabled;
+        }
     }
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter
-    @Setter
+
     public static class ModuleConfig {
 
         private String moduleName;
         private String rootDir;
+
+        public ModuleConfig(String moduleName, String rootDir) {
+            this.moduleName = moduleName;
+            this.rootDir = rootDir;
+        }
+
+        public String getModuleName() {
+            return moduleName;
+        }
+
+        public void setModuleName(String moduleName) {
+            this.moduleName = moduleName;
+        }
+
+        public String getRootDir() {
+            return rootDir;
+        }
+
+        public void setRootDir(String rootDir) {
+            this.rootDir = rootDir;
+        }
     }
 }
