@@ -1,5 +1,6 @@
 package net.twilightcity.flow.controller;
 
+import net.twilightcity.flow.activity.ModuleManager;
 import net.twilightcity.gridtime.api.flow.event.EventType;
 import net.twilightcity.gridtime.api.flow.event.NewSnippetEventDto;
 import net.twilightcity.gridtime.api.flow.event.SnippetSourceType;
@@ -29,10 +30,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class IFMController {
 
+
     private AtomicBoolean active = new AtomicBoolean(false);
     private ActivityHandler activityHandler;
     private MessageQueue messageQueue;
     private FlowPublisher flowPublisher;
+    private ModuleManager moduleManager;
     private FlowClient flowClient;
     private PushModificationActivityTimer pushModificationActivityTimer;
 
@@ -40,7 +43,8 @@ public class IFMController {
         File ideaFlowDir = createFlowPluginDir();
         LocalDateTimeService timeService = new LocalDateTimeService();
         flowPublisher = new FlowPublisher(ideaFlowDir, logger, timeService);
-        messageQueue = new MessageQueue(flowPublisher, timeService);
+        moduleManager = new ModuleManager(logger, getModuleConfigFile());
+        messageQueue = new MessageQueue(flowPublisher, timeService, moduleManager);
         activityHandler = new ActivityHandler(this, messageQueue, timeService);
         pushModificationActivityTimer = new PushModificationActivityTimer(activityHandler, 30);
     }
@@ -49,14 +53,26 @@ public class IFMController {
         return new File(System.getProperty("user.home"), ".flow");
     }
 
+    private File getFlowPluginDir() {
+        return new File(getFlowDir(), "com.jetbrains.intellij");
+    }
+
+    private File getModuleConfigFile() {
+        return new File(getFlowPluginDir(), "modules.json");
+    }
+
     private File createFlowPluginDir() {
-        File flowPluginDir = new File(getFlowDir(), "com.jetbrains.intellij");
+        File flowPluginDir = getFlowPluginDir();
         flowPluginDir.mkdirs();
         return flowPluginDir;
     }
 
     public ActivityHandler getActivityHandler() {
         return activityHandler;
+    }
+
+    public ModuleManager getModuleManager() {
+        return moduleManager;
     }
 
     public void flushBatch() {

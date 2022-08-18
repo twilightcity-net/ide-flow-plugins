@@ -48,7 +48,6 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
         Messages.showErrorDialog(message, title);
     }
 
-
     @Override
     public String getComponentName() {
         return NAME;
@@ -57,7 +56,7 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
     @Override
     public void initComponent() {
         controller = new IFMController(log);
-        virtualFileActivityHandler = new VirtualFileActivityHandler(controller.getActivityHandler());
+        virtualFileActivityHandler = new VirtualFileActivityHandler(controller.getActivityHandler(), controller.getModuleManager());
 
         try {
             controller.start();

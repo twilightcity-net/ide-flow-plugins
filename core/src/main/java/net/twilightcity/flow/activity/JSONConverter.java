@@ -67,6 +67,14 @@ public class JSONConverter {
         return mapper.readValue(jsonContent, clazz);
     }
 
+    String toPlainJSON(Object object) throws IOException {
+        return mapper.writeValueAsString(object);
+    }
+
+    <T> T fromPlainJSON(String jsonInString, Class<T> clazz) throws IOException {
+        return mapper.readValue(jsonInString, clazz);
+    }
+
     static class UnsupportedObjectType extends RuntimeException {
 
         UnsupportedObjectType(String message) {

@@ -19,16 +19,18 @@ import java.util.Map;
 
 public class MessageQueue {
 
+    private ModuleManager moduleManager;
     private MessageLogger messageLogger;
     private TimeService timeService;
 
-    public MessageQueue(FlowPublisher batchPublisher, TimeService timeService) {
-        this(new FileMessageLogger(batchPublisher, timeService), timeService);
+    public MessageQueue(FlowPublisher batchPublisher, TimeService timeService, ModuleManager moduleManager) {
+        this(new FileMessageLogger(batchPublisher, timeService), timeService, moduleManager);
     }
 
-    public MessageQueue(MessageLogger messageLogger, TimeService timeService) {
+    public MessageQueue(MessageLogger messageLogger, TimeService timeService, ModuleManager moduleManager) {
         this.messageLogger = messageLogger;
         this.timeService = timeService;
+        this.moduleManager = moduleManager;
     }
 
     public void flush() {
@@ -40,15 +42,17 @@ public class MessageQueue {
     }
 
     public void pushEditorActivity(Long durationInSeconds, LocalDateTime endTime, String filePath, String module, boolean isModified) {
-        NewEditorActivityDto activity = NewEditorActivityDto.builder()
-                .module(module)
-                .endTime(endTime)
-                .durationInSeconds(durationInSeconds)
-                .filePath(filePath)
-                .isModified(isModified)
-                .build();
+        if (moduleManager.isModuleEnabled(module)) {
+            NewEditorActivityDto activity = NewEditorActivityDto.builder()
+                    .module(module)
+                    .endTime(endTime)
+                    .durationInSeconds(durationInSeconds)
+                    .filePath(filePath)
+                    .isModified(isModified)
+                    .build();
 
-        messageLogger.writeMessage(activity);
+            messageLogger.writeMessage(activity);
+        }
     }
 
     public void pushModificationActivity(Long durationInSeconds, int modificationCount) {
