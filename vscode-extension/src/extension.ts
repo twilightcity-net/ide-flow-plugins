@@ -2,16 +2,34 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode'
 
+import {FileMessageLogger} from './fileMessageLogger'
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  console.log('context', context)
+  // TODO: Get each top level workspace directory and map them to a
+  // module.
+  // When creating pushing an activity, get module from directory.
+  const topWorkspaceFolder =
+    vscode.workspace.workspaceFolders?.[0].uri.fsPath || ''
+  console.log('topWorkspaceFolder', topWorkspaceFolder)
+  vscode.window.showInformationMessage(
+    'Congratulations, FlowInsight extension is now active!',
+  )
+  const messageLogger = new FileMessageLogger(topWorkspaceFolder)
 
   // We can use onDidChangeTextDocument to count the number of changes made
   // in a given time frame.
+  // Should we ignore changes to the .flow directory?
+  // This picks up changes to the active.flow file in testing.
   vscode.workspace.onDidChangeTextDocument(
     (change) => {
+      // We will probably want to make this configurable.
+      if (change.document.uri.fsPath.includes('.flow/')) {
+        return
+      }
       console.log('change', change)
+      messageLogger.writeMessage('A change was made')
     },
     null,
     context.subscriptions,
