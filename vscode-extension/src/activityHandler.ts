@@ -1,12 +1,12 @@
 const SHORTEST_ACTIVITY_TIME_IN_MS = 3000
 
 export default class ActivityHandler {
-  constructor() {}
-
   private modificationCount: number = 0
   private recentIdleDurationInMS: number | null = null
   private activeFileActivity: FileActivity | null = null
   private activeProcessMap: Map<string, ProcessActivity> = new Map()
+
+  constructor() {}
 
   get getRecentIdleDuration() {
     return this.recentIdleDurationInMS

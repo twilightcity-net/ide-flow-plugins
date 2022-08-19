@@ -6,6 +6,9 @@ const activeFlowFileName = 'active.flow'
 const flowDirectory = '.flow/'
 
 export class FileMessageLogger {
+  private activeFileStream: WriteStream | null = null
+  private shouldSendToQueue: boolean = false
+  private writeQueue: string[] = []
   constructor(private readonly workspaceDirectory: string) {
     this.workspaceDirectory = workspaceDirectory
 
@@ -27,9 +30,6 @@ export class FileMessageLogger {
       this.processQueue()
     })
   }
-  private activeFileStream: WriteStream | null = null
-  private shouldSendToQueue: boolean = false
-  private writeQueue: string[] = []
 
   flush() {
     console.log('Flushing file message logger')
