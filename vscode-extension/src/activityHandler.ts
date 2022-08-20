@@ -1,5 +1,7 @@
 const SHORTEST_ACTIVITY_TIME_IN_MS = 3000
 
+// NOTE: Dates should be UTC
+
 export default class ActivityHandler {
   private modificationCount: number = 0
   private recentIdleDurationInMS: number | null = null

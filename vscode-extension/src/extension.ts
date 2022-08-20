@@ -3,10 +3,12 @@
 import * as vscode from 'vscode'
 
 import {FileMessageLogger} from './fileMessageLogger'
+import Config from './utilities/config'
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  const config = new Config()
   // TODO: Get each top level workspace directory and map them to a
   // module.
   // When creating pushing an activity, get module from directory.

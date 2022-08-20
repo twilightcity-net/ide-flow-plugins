@@ -1,6 +1,7 @@
 {
   "name": "vscode-extension",
   "displayName": "FlowInsight VSCode Extension",
+  "publisher": "FlowInsight",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -20,6 +21,17 @@
   },
   "main": "./dist/extension.js",
   "contributes": {
+    "cofiguration": {
+      "type": "object",
+      "title": "FlowInsight VSCode Extension",
+      "properties": {
+        "flowInsight.configFilePath": {
+          "type": "string",
+          "description": "Location of your FlowInsight configuration file. Typically in your home directory .flow folder",
+          "default": "${env:HOME}/.flow/config.json"
+        }
+      }
+    },
     "commands": [
       {
         "command": "vscode-extension.helloWorld",
