@@ -7,6 +7,7 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import net.twilightcity.flow.Logger;
 import net.twilightcity.flow.activity.ActivityHandler;
+import net.twilightcity.flow.activity.FlowInsightConfig;
 import net.twilightcity.flow.activity.MessageQueue;
 import net.twilightcity.flow.activity.ModuleManager;
 import net.twilightcity.gridtime.api.flow.event.EventType;
@@ -29,7 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class IFMController {
 
-
     private AtomicBoolean active = new AtomicBoolean(false);
     private ActivityHandler activityHandler;
     private MessageQueue messageQueue;
@@ -40,7 +40,8 @@ public class IFMController {
     public IFMController(Logger logger) {
         File ideaFlowDir = createFlowPluginDir();
         LocalDateTimeService timeService = new LocalDateTimeService();
-        moduleManager = new ModuleManager(logger, getModuleConfigFile());
+        FlowInsightConfig flowInsightConfig = new FlowInsightConfig(logger, getFlowInsightConfigFile());
+        moduleManager = new ModuleManager(logger, flowInsightConfig);
         messageQueue = new MessageQueue(timeService, moduleManager, getActiveFlowFile());
         activityHandler = new ActivityHandler(this, messageQueue, timeService);
         pushModificationActivityTimer = new PushModificationActivityTimer(activityHandler, 30);
@@ -58,8 +59,8 @@ public class IFMController {
         return new File(getPluginsDir(), "com.jetbrains.intellij");
     }
 
-    private File getModuleConfigFile() {
-        return new File(getFlowPluginDir(), "modules.json");
+    private File getFlowInsightConfigFile() {
+        return new File(getFlowPluginDir(), "flowinsight-config.json");
     }
 
     private File getActiveFlowFile() {
