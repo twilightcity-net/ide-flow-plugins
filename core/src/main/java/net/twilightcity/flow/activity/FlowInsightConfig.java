@@ -56,10 +56,19 @@ public class FlowInsightConfig {
     }
 
     public static class ModuleConfigSet {
+        private Boolean yesToAllEnabled;
         private List<ModuleConfig> modules;
         private List<String> disabled;
 
         public ModuleConfigSet() {}
+
+        public Boolean getYesToAllEnabled() {
+            return yesToAllEnabled;
+        }
+
+        public void setYesToAllEnabled(Boolean yesToAllEnabled) {
+            this.yesToAllEnabled = yesToAllEnabled;
+        }
 
         public List<ModuleConfig> getModules() {
             return modules;

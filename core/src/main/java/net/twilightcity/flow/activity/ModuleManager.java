@@ -14,6 +14,7 @@ public class ModuleManager {
 
     private List<FlowInsightConfig.ModuleConfig> moduleConfigs = new ArrayList<>();
 
+    private boolean yesToAllEnabled = false;
     private final Set<String> enabledModules = new HashSet<>();
     private Set<String> disabledModules = new HashSet<>();
 
@@ -56,6 +57,10 @@ public class ModuleManager {
             this.moduleConfigs = moduleConfigSet.getModules();
             this.disabledModules = new HashSet<>(moduleConfigSet.getDisabled());
 
+            if (moduleConfigSet.getYesToAllEnabled() != null) {
+                this.yesToAllEnabled = moduleConfigSet.getYesToAllEnabled();
+            }
+
             for (FlowInsightConfig.ModuleConfig config : this.moduleConfigs) {
                 this.enabledModules.add(config.getModuleName());
             }
@@ -68,8 +73,18 @@ public class ModuleManager {
         FlowInsightConfig.ModuleConfigSet config = new FlowInsightConfig.ModuleConfigSet();
         config.setModules(moduleConfigs);
         config.setDisabled(new ArrayList<>(disabledModules));
+        config.setYesToAllEnabled(yesToAllEnabled);
 
         flowInsightConfig.saveToJson(config);
     }
 
+    public void enableYesToAll() {
+        yesToAllEnabled = true;
+        disabledModules = new HashSet<>();
+        flushToJson();
+    }
+
+    public boolean isYesToAllEnabled() {
+        return yesToAllEnabled;
+    }
 }

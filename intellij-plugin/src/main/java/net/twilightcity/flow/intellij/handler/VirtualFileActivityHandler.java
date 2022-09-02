@@ -44,18 +44,37 @@ public class VirtualFileActivityHandler {
         }
 
         isModuleAccessBeingValidated = true;
-        int response = Messages.showYesNoDialog("Would you like to record activity for module '"+moduleName+"'?",
-                "FlowInsight Metrics", "Yes", "No", Messages.getQuestionIcon());
 
-        if (response == YES_RESPONSE) {
-            String moduleRootDir = getModuleRoot(project, file);
-            moduleManager.enableModule(moduleName, moduleRootDir);
-        } else if (response == NO_RESPONSE) {
-            moduleManager.disableModule(moduleName);
+        if (moduleManager.isYesToAllEnabled()) {
+            enableModule(moduleName, project, file);
+        } else {
+            handleModuleDialog(moduleName, project, file);
         }
 
         isModuleAccessBeingValidated = false;
 
+    }
+
+    private void handleModuleDialog(String moduleName, Project project, VirtualFile file) {
+        ModuleOptInDialog dialog = new ModuleOptInDialog(moduleName);
+
+        dialog.showAndGet();
+        int exitCode = dialog.getExitCode();
+
+        if (exitCode == ModuleOptInDialog.YES_RESPONSE) {
+            enableModule(moduleName, project, file);
+        } else if (exitCode == ModuleOptInDialog.NO_RESPONSE) {
+            moduleManager.disableModule(moduleName);
+        } else if (exitCode == ModuleOptInDialog.YES_TO_ALL_RESPONSE) {
+            enableModule(moduleName, project, file);
+            moduleManager.enableYesToAll();
+        }
+    }
+
+
+    private void enableModule(String moduleName, Project project, VirtualFile file) {
+        String moduleRootDir = getModuleRoot(project, file);
+        moduleManager.enableModule(moduleName, moduleRootDir);
     }
 
     private boolean moduleIsDefaultName(String moduleName) {
