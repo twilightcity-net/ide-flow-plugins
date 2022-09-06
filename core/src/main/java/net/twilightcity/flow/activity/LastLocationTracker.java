@@ -18,8 +18,10 @@ public class LastLocationTracker {
     }
 
     public void track(String moduleName, String filePath) {
-        LastLocationInfo data = new LastLocationInfo(moduleName, filePath);
-        saveToJson(data);
+        if (filePath != null) {
+            LastLocationInfo data = new LastLocationInfo(moduleName, filePath);
+            saveToJson(data);
+        }
     }
 
     private void saveToJson(LastLocationInfo data) {
