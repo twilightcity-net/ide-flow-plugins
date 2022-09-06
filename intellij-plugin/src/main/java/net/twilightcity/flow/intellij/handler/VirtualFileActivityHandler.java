@@ -3,32 +3,25 @@ package net.twilightcity.flow.intellij.handler;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtil;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.twilightcity.flow.activity.ActivityHandler;
-import net.twilightcity.flow.activity.ModuleManager;
-import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import javax.swing.*;
-import java.awt.*;
+import net.twilightcity.flow.activity.LastLocationTracker;
+import net.twilightcity.flow.config.ModuleManager;
 
 public class VirtualFileActivityHandler {
 
     private final ActivityHandler activityHandler;
     private final ModuleManager moduleManager;
+    private final LastLocationTracker lastLocationTracker;
 
-    private static final int YES_RESPONSE = 0;
-    private static final int NO_RESPONSE = 1;
     private static final String DEFAULT_MODULE = "default";
 
     private boolean isModuleAccessBeingValidated = false;
 
-    public VirtualFileActivityHandler(ActivityHandler activityHandler, ModuleManager moduleManager) {
+    public VirtualFileActivityHandler(ActivityHandler activityHandler, ModuleManager moduleManager, LastLocationTracker lastLocationTracker) {
         this.activityHandler = activityHandler;
         this.moduleManager = moduleManager;
+        this.lastLocationTracker = lastLocationTracker;
     }
 
     public void startFileEvent(Project project, VirtualFile file) {
@@ -36,6 +29,7 @@ public class VirtualFileActivityHandler {
         String moduleName = getModuleName(project, file);
         requestModuleAccess(moduleName, project, file);
         activityHandler.startFileEvent(moduleName, filePath);
+        lastLocationTracker.track(moduleName, filePath);
     }
 
     private void requestModuleAccess(String moduleName, Project project, VirtualFile file) {

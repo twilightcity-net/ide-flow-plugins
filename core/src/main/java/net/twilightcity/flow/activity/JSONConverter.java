@@ -17,13 +17,12 @@ import java.util.Map;
 
 public class JSONConverter {
 
-    Map<String, Class> idToClassMap = createIdToClassMap();
+    private Map<String, Class> idToClassMap = createIdToClassMap();
+    private Map<Class, String> classToIdMap = createClassToIdMap();
 
-    Map<Class, String> classToIdMap = createClassToIdMap();
+    private ObjectMapper mapper;
 
-    ObjectMapper mapper;
-
-    JSONConverter() {
+    public JSONConverter() {
         mapper = new ObjectMapperBuilder()
                 .jsr310TimeModule()
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -49,7 +48,7 @@ public class JSONConverter {
         return classToIdMap;
     }
 
-    String toJSON(Object object) throws JsonProcessingException {
+    public String toJSON(Object object) throws JsonProcessingException {
         String typeName = classToIdMap.get(object.getClass());
         if (typeName == null) {
             throw new UnsupportedObjectType("Unable to find typeName for " + object.getClass().getName());
@@ -57,7 +56,7 @@ public class JSONConverter {
         return typeName + "=" + mapper.writeValueAsString(object);
     }
 
-    Object fromJSON(String jsonInString) throws IOException {
+    public Object fromJSON(String jsonInString) throws IOException {
         int index = jsonInString.indexOf("=");
 
         String typeName = jsonInString.substring(0, index);
@@ -67,11 +66,11 @@ public class JSONConverter {
         return mapper.readValue(jsonContent, clazz);
     }
 
-    String toPlainJSON(Object object) throws IOException {
+    public String toPlainJSON(Object object) throws IOException {
         return mapper.writeValueAsString(object);
     }
 
-    <T> T fromPlainJSON(String jsonInString, Class<T> clazz) throws IOException {
+    public <T> T fromPlainJSON(String jsonInString, Class<T> clazz) throws IOException {
         return mapper.readValue(jsonInString, clazz);
     }
 

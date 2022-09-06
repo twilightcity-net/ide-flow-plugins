@@ -17,7 +17,7 @@ class TestBatchPublisher extends Specification {
 
     FlowPublisher flowPublisher
     File tempDir
-    JSONConverter jsonConverter = new JSONConverter()
+	JSONConverter jsonConverter = new JSONConverter()
     MockTimeService timeService = new MockTimeService()
 
     FlowClient mockFlowClient

@@ -7,9 +7,10 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import net.twilightcity.flow.Logger;
 import net.twilightcity.flow.activity.ActivityHandler;
-import net.twilightcity.flow.activity.FlowInsightConfig;
+import net.twilightcity.flow.activity.LastLocationTracker;
+import net.twilightcity.flow.config.FlowInsightConfig;
 import net.twilightcity.flow.activity.MessageQueue;
-import net.twilightcity.flow.activity.ModuleManager;
+import net.twilightcity.flow.config.ModuleManager;
 import net.twilightcity.gridtime.api.flow.event.EventType;
 import net.twilightcity.gridtime.api.flow.event.NewSnippetEventDto;
 import net.twilightcity.gridtime.api.flow.event.SnippetSourceType;
@@ -30,10 +31,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class IFMController {
 
+
     private AtomicBoolean active = new AtomicBoolean(false);
     private ActivityHandler activityHandler;
     private MessageQueue messageQueue;
     private ModuleManager moduleManager;
+    private LastLocationTracker lastLocationTracker;
     private FlowClient flowClient;
     private PushModificationActivityTimer pushModificationActivityTimer;
 
@@ -42,6 +45,7 @@ public class IFMController {
         LocalDateTimeService timeService = new LocalDateTimeService();
         FlowInsightConfig flowInsightConfig = new FlowInsightConfig(logger, getFlowInsightConfigFile());
         moduleManager = new ModuleManager(logger, flowInsightConfig);
+        lastLocationTracker = new LastLocationTracker(logger, getLastLocationFile());
         messageQueue = new MessageQueue(timeService, moduleManager, getActiveFlowFile());
         activityHandler = new ActivityHandler(this, messageQueue, timeService);
         pushModificationActivityTimer = new PushModificationActivityTimer(activityHandler, 30);
@@ -67,6 +71,11 @@ public class IFMController {
         return new File(getFlowPluginDir(), "active.flow");
     }
 
+    private File getLastLocationFile() {
+        return new File(getFlowPluginDir(), "last-location.json");
+    }
+
+
     private File createFlowPluginDir() {
         File flowPluginDir = getFlowPluginDir();
         flowPluginDir.mkdirs();
@@ -79,6 +88,10 @@ public class IFMController {
 
     public ModuleManager getModuleManager() {
         return moduleManager;
+    }
+
+    public LastLocationTracker getLastLocationTracker() {
+        return lastLocationTracker;
     }
 
     public void flushBatch() {

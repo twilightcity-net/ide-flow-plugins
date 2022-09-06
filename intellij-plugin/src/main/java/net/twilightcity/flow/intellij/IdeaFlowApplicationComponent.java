@@ -56,7 +56,8 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
     @Override
     public void initComponent() {
         controller = new IFMController(log);
-        virtualFileActivityHandler = new VirtualFileActivityHandler(controller.getActivityHandler(), controller.getModuleManager());
+        virtualFileActivityHandler = new VirtualFileActivityHandler(controller.getActivityHandler(),
+                controller.getModuleManager(), controller.getLastLocationTracker());
 
         try {
             controller.start();

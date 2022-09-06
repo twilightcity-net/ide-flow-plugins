@@ -1,5 +1,6 @@
 package net.twilightcity.flow.activity
 
+
 import net.twilightcity.gridtime.api.flow.activity.NewEditorActivityDto
 import net.twilightcity.gridtime.api.flow.batch.NewFlowBatchEventDto
 import spock.lang.Specification

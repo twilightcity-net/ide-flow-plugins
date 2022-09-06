@@ -1,10 +1,9 @@
-package net.twilightcity.flow.activity;
+package net.twilightcity.flow.config;
 
 import net.twilightcity.flow.Logger;
+import net.twilightcity.flow.activity.JSONConverter;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 public class FlowInsightConfig {
@@ -12,7 +11,7 @@ public class FlowInsightConfig {
     private final File flowInsightConfigFile;
     private final Logger logger;
 
-    private JSONConverter jsonConverter = new JSONConverter();
+    private final JSONConverter jsonConverter = new JSONConverter();
 
 
     public FlowInsightConfig(Logger logger, File flowInsightConfigFile) {
