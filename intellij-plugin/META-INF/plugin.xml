@@ -7,7 +7,7 @@
 
 		Designed to work with FlowInsight team flow optimization tools, available at flowinsight.com.
 	</description>
-	<version>0.36</version>
+	<version>0.37</version>
 	<vendor>Twilight City, Inc.</vendor>
 	<depends>com.intellij.modules.platform</depends>
 	<depends>com.intellij.modules.lang</depends>

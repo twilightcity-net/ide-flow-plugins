@@ -69,6 +69,7 @@ public class IdeaFlowProjectComponent implements ProjectComponent {
         }
 
         public void fileOpened(FileEditorManager source, VirtualFile file) {
+            //no op here, we already get selection changed events on open, no need to call 2x
         }
 
         public void fileClosed(FileEditorManager source, VirtualFile file) {
