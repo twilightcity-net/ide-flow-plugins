@@ -6,7 +6,7 @@ The flow plugins work by instrumenting IDEs, editors, build tools, or other tool
 
 Each plugin should output data into it's own folder within the `~/.flow` directory, and append to an active.flow file.  For example, the intellij plugin writes to:
 
-`~/.flow/com.jetbrains.intellij/active.flow`
+`~/.flow/plugins/com.jetbrains.intellij/active.flow`
 
 For a new plugin, write to a different folder.  Additions to the file are expected to be append only.
 
