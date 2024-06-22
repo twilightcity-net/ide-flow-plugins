@@ -4,7 +4,7 @@ public class Logger implements net.twilightcity.flow.Logger {
 
     public static final Logger INSTANCE = new Logger();
 
-    com.intellij.openapi.diagnostic.Logger logger = com.intellij.openapi.diagnostic.Logger.getInstance("org.dreamscale");
+    com.intellij.openapi.diagnostic.Logger logger = com.intellij.openapi.diagnostic.Logger.getInstance("net.twilightcity");
 
     @Override
     public void debug(String message) {

@@ -6,8 +6,13 @@ import feign.Request;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import net.twilightcity.flow.Logger;
+import net.twilightcity.flow.action.Action;
+import net.twilightcity.flow.action.ActionDispatcher;
+import net.twilightcity.flow.action.FervieActionProcessor;
 import net.twilightcity.flow.activity.ActivityHandler;
 import net.twilightcity.flow.activity.LastLocationTracker;
+import net.twilightcity.flow.config.FervieActionConfig;
+import net.twilightcity.flow.config.FervieActionConfigManager;
 import net.twilightcity.flow.config.FlowInsightConfig;
 import net.twilightcity.flow.activity.MessageQueue;
 import net.twilightcity.flow.config.ModuleManager;
@@ -31,14 +36,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class IFMController {
 
-
-    private AtomicBoolean active = new AtomicBoolean(false);
-    private ActivityHandler activityHandler;
-    private MessageQueue messageQueue;
-    private ModuleManager moduleManager;
-    private LastLocationTracker lastLocationTracker;
+    private final AtomicBoolean active = new AtomicBoolean(false);
+    private final ActivityHandler activityHandler;
+    private final MessageQueue messageQueue;
+    private final ModuleManager moduleManager;
+    private final LastLocationTracker lastLocationTracker;
     private FlowClient flowClient;
-    private PushModificationActivityTimer pushModificationActivityTimer;
+    private final PushModificationActivityTimer pushModificationActivityTimer;
+
+    private final FervieActionConfigManager fervieActionManager;
+    private final FervieActionProcessor fervieActionProcessor;
 
     public IFMController(Logger logger) {
         File ideaFlowDir = createFlowPluginDir();
@@ -49,6 +56,11 @@ public class IFMController {
         messageQueue = new MessageQueue(timeService, moduleManager, getActiveFlowFile());
         activityHandler = new ActivityHandler(this, messageQueue, timeService);
         pushModificationActivityTimer = new PushModificationActivityTimer(activityHandler, 30);
+
+        FervieActionConfig fervieActionConfig = new FervieActionConfig(logger, getFervieActionConfigFile());
+        fervieActionManager = new FervieActionConfigManager(logger, fervieActionConfig);
+
+        fervieActionProcessor = new FervieActionProcessor(logger, getFervieActionsDirectory(), getFervieActionFile());
     }
 
     private File getFlowDir() {
@@ -75,6 +87,17 @@ public class IFMController {
         return new File(getFlowPluginDir(), "last-location.json");
     }
 
+    private File getFervieActionConfigFile() {
+        return new File(getFlowPluginDir(), "fervie-action-config.json");
+    }
+
+    private File getFervieActionsDirectory() {
+        return new File(getFlowPluginDir(), "actions");
+    }
+
+    private File getFervieActionFile() {
+        return new File(getFervieActionsDirectory(), "fervie.action");
+    }
 
     private File createFlowPluginDir() {
         File flowPluginDir = getFlowPluginDir();
@@ -88,6 +111,14 @@ public class IFMController {
 
     public ModuleManager getModuleManager() {
         return moduleManager;
+    }
+
+    public FervieActionConfigManager getFervieActionConfigManager() {
+        return fervieActionManager;
+    }
+
+    public FervieActionProcessor getFervieActionProcessor() {
+        return fervieActionProcessor;
     }
 
     public LastLocationTracker getLastLocationTracker() {
@@ -192,6 +223,10 @@ public class IFMController {
                 .position(LocalDateTime.now())
                 .build();
         flowClient.publishSnippet(snippetEvent);
+    }
+
+    public void configureActionDispatcher(ActionDispatcher actionDispatcher) {
+        fervieActionProcessor.configureActionDispatcher(actionDispatcher);
     }
 
     private static final class InvalidApiKeyException extends RuntimeException {

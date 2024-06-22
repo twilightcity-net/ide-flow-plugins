@@ -11,6 +11,8 @@ import com.intellij.openapi.wm.IdeFrame;
 import com.intellij.ui.UIBundle;
 import com.intellij.util.messages.MessageBusConnection;
 import net.twilightcity.flow.controller.IFMController;
+import net.twilightcity.flow.intellij.extension.FervieActionDispatcher;
+import net.twilightcity.flow.intellij.extension.FervieExtensionPointService;
 import net.twilightcity.flow.intellij.handler.DeactivationHandler;
 import net.twilightcity.flow.intellij.handler.VirtualFileActivityHandler;
 
@@ -30,6 +32,9 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
     private IFMController controller;
     private MessageBusConnection appConnection;
     private VirtualFileActivityHandler virtualFileActivityHandler;
+    private FervieExtensionPointService fervieExtensionPointService;
+    private FervieActionDispatcher fervieActionDispatcher;
+
 
     public static IdeaFlowApplicationComponent getApplicationComponent() {
         return (IdeaFlowApplicationComponent) ApplicationManager.getApplication().getComponent(NAME);
@@ -65,6 +70,7 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
         controller = new IFMController(log);
         virtualFileActivityHandler = new VirtualFileActivityHandler(controller.getActivityHandler(),
                 controller.getModuleManager(), controller.getLastLocationTracker());
+        controller.getFervieActionProcessor().startWatchLoop();
 
         try {
             controller.start();
@@ -82,11 +88,18 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
                 new FocusChangeEventListener(virtualFileActivityHandler)
         );
 
+        fervieExtensionPointService = new FervieExtensionPointService(controller.getFervieActionConfigManager());
+        fervieExtensionPointService.initRegisteredExtensions();
+
+        this.fervieActionDispatcher = new FervieActionDispatcher(log, fervieExtensionPointService);
+        this.controller.configureActionDispatcher(this.fervieActionDispatcher);
+
     }
 
     @Override
     public void disposeComponent() {
         if (controller != null) {
+            controller.getFervieActionProcessor().exitWatchLoop();
             controller.shutdown();
         }
         if (appConnection != null) {

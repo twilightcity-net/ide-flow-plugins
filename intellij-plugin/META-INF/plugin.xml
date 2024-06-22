@@ -5,9 +5,9 @@
 		modify code, and execute tests.  IDE activity is spooled to a .flow file in your ~/.flow/plugins/com.jetbrains.intellij directory.
 		This plugin is open source, under an Apache 2 License.
 
-		Designed to work with FlowInsight team flow optimization tools, available at flowinsight.com.
+		Designed to work with FlowInsight developer flow console, available at flowinsight.com.
 	</description>
-	<version>0.37</version>
+	<version>0.43</version>
 	<vendor>Twilight City, Inc.</vendor>
 	<depends>com.intellij.modules.platform</depends>
 	<depends>com.intellij.modules.lang</depends>
@@ -62,5 +62,12 @@
         </group>
 
 	</actions>
+
+	<extensionPoints>
+		<extensionPoint
+				name="fervie.popup.by.hotkey.action"
+				interface="net.twilightcity.flow.intellij.extension.api.FerviePopupByHotKeyAction"/>
+	</extensionPoints>
+
 
 </idea-plugin>
