@@ -54,6 +54,7 @@ public class ActionFileReader {
 
 	private Action createActionFromLine(String currentLine) throws IOException {
 
+		System.out.println("Reading action: "+currentLine);
 		int indexOfSplit = currentLine.indexOf('=');
 
 		String actionTypeStr = currentLine.substring(0, indexOfSplit);

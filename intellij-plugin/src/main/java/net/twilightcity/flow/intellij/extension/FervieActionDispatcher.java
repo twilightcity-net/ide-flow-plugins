@@ -26,7 +26,7 @@ public class FervieActionDispatcher implements ActionDispatcher {
 	public void dispatchAction(Action action) {
 		if (action.getActionType().equals(ActionType.RUN)) {
 			RunAction runAction = (RunAction) action;
-			log.debug("run action: "+runAction.getActionId());
+			System.out.println("run action: "+runAction.getActionId());
 			this.fervieExtensionPointService.fireAction(projectContextHandler.getProjectContext(), runAction.getActionId());
 		} else if (action.getActionType().equals(ActionType.GOTO)) {
 			GotoAction gotoAction = (GotoAction) action;

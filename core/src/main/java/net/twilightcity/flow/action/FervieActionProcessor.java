@@ -57,6 +57,7 @@ public class FervieActionProcessor {
 			while (isRunning) {
 
 				if (fervieActionFile.exists()) {
+
 					long modifyTime = fervieActionFile.lastModified();
 
 					if (lastModified != modifyTime ) {
@@ -84,6 +85,8 @@ public class FervieActionProcessor {
 			log.debug("Dispatching "+actions.size() + " actions");
 
 			dispatchActions(actions);
+
+			tempFile.delete();
 
 		} else {
 			log.warn("Unable to rename file "+fervieActionFile + " to "+tempFileName);

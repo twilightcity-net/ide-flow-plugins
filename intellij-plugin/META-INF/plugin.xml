@@ -65,7 +65,7 @@
 
 	<extensionPoints>
 		<extensionPoint
-				name="fervie.popup.by.hotkey.action"
+				name="ferviePopupByHotkey"
 				interface="net.twilightcity.flow.intellij.extension.api.FerviePopupByHotKeyAction"/>
 	</extensionPoints>
 

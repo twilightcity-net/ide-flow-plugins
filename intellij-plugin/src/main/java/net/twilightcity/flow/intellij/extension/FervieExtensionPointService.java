@@ -17,7 +17,7 @@ public final class FervieExtensionPointService {
 	private static final Logger log = Logger.INSTANCE;
 
 	private static final ExtensionPointName<FerviePopupByHotKeyAction> EP_NAME =
-			ExtensionPointName.create("net.twilightcity.flow.fervie.popup.by.hotkey.action");
+			ExtensionPointName.create("net.twilightcity.flow.ferviePopupByHotkey");
 
 	public FervieExtensionPointService(FervieActionConfigManager fervieActionManager) {
 		this.fervieActionManager = fervieActionManager;
@@ -33,7 +33,7 @@ public final class FervieExtensionPointService {
 			String buttonTip = extension.getFervieButtonTooltip();
 
 			fervieActionManager.addFervieAction(extensionName, actionId, buttonText, buttonTip);
-			log.info("Registered Extension: "+actionId + " with button: "+buttonText);
+			log.info("[FervieExtensionPointService] Registered Extension: "+actionId + " with button: "+buttonText);
 			actionMap.put(actionId, extension);
 		}
 
@@ -52,7 +52,7 @@ public final class FervieExtensionPointService {
 		if (action != null) {
 			action.onFervieAction();
 		} else {
-			System.out.println("Action not found");
+			log.warn("[FervieExtensionPointService] Action not found for id = "+actionId);
 		}
 	}
 
