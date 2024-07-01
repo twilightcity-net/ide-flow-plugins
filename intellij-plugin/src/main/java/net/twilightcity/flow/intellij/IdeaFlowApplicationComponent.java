@@ -14,6 +14,8 @@ import net.twilightcity.flow.controller.IFMController;
 import net.twilightcity.flow.intellij.extension.FervieActionDispatcher;
 import net.twilightcity.flow.intellij.extension.FervieExtensionPointService;
 import net.twilightcity.flow.intellij.handler.DeactivationHandler;
+import net.twilightcity.flow.intellij.handler.GotoFileActionHandler;
+import net.twilightcity.flow.intellij.handler.ProjectContextHandler;
 import net.twilightcity.flow.intellij.handler.VirtualFileActivityHandler;
 
 import javax.swing.*;
@@ -34,6 +36,8 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
     private VirtualFileActivityHandler virtualFileActivityHandler;
     private FervieExtensionPointService fervieExtensionPointService;
     private FervieActionDispatcher fervieActionDispatcher;
+    private GotoFileActionHandler gotoFileActionHandler;
+    private ProjectContextHandler projectContextHandler;
 
 
     public static IdeaFlowApplicationComponent getApplicationComponent() {
@@ -46,6 +50,10 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
 
     public static VirtualFileActivityHandler getFileActivityHandler() {
         return getApplicationComponent().virtualFileActivityHandler;
+    }
+
+    public static ProjectContextHandler getProjectContextHandler() {
+        return getApplicationComponent().projectContextHandler;
     }
 
     public static Icon getIcon(String path) {
@@ -68,6 +76,8 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
     @Override
     public void initComponent() {
         controller = new IFMController(log);
+        projectContextHandler = new ProjectContextHandler();
+
         virtualFileActivityHandler = new VirtualFileActivityHandler(controller.getActivityHandler(),
                 controller.getModuleManager(), controller.getLastLocationTracker());
         controller.getFervieActionProcessor().startWatchLoop();
@@ -79,19 +89,21 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
             log.error("Disabling FlowInsight Metrics Plugin due to controller initialization failure: " + ex.getMessage(), ex.getCause());
         }
 
-        IDEApplicationListener applicationListener = new IDEApplicationListener(controller, virtualFileActivityHandler);
+        IDEApplicationListener applicationListener = new IDEApplicationListener(controller, virtualFileActivityHandler, projectContextHandler);
         appConnection = ApplicationManager.getApplication().getMessageBus().connect();
         appConnection.subscribe(ApplicationActivationListener.TOPIC, applicationListener);
 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener(
                 FOCUSED_WINDOW_EVENT,
-                new FocusChangeEventListener(virtualFileActivityHandler)
+                new FocusChangeEventListener(virtualFileActivityHandler, projectContextHandler)
         );
 
         fervieExtensionPointService = new FervieExtensionPointService(controller.getFervieActionConfigManager());
         fervieExtensionPointService.initRegisteredExtensions();
 
-        this.fervieActionDispatcher = new FervieActionDispatcher(log, fervieExtensionPointService);
+        gotoFileActionHandler = new GotoFileActionHandler(log);
+
+        this.fervieActionDispatcher = new FervieActionDispatcher(log, fervieExtensionPointService, gotoFileActionHandler, projectContextHandler);
         this.controller.configureActionDispatcher(this.fervieActionDispatcher);
 
     }
@@ -110,17 +122,20 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
     private static class FocusChangeEventListener implements PropertyChangeListener {
 
         private final VirtualFileActivityHandler virtualFileActivityHandler;
+        private final ProjectContextHandler projectContextHandler;
 
-        FocusChangeEventListener(VirtualFileActivityHandler virtualFileActivityHandler) {
+        FocusChangeEventListener(VirtualFileActivityHandler virtualFileActivityHandler, ProjectContextHandler projectContextHandler) {
             this.virtualFileActivityHandler = virtualFileActivityHandler;
+            this.projectContextHandler = projectContextHandler;
         }
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
+
             if (evt.getNewValue() instanceof IdeFrame) {
                 IdeFrame ideFrame = (IdeFrame) evt.getNewValue();
                 if (ideFrame.getProject() != null) { //project window selected
-
+                    projectContextHandler.updateContext(ideFrame.getProject());
                     FileEditorManager editorManager = FileEditorManager.getInstance(ideFrame.getProject());
                     if (editorManager != null) {
                         VirtualFile[] selectedFiles = editorManager.getSelectedFiles();
@@ -136,17 +151,21 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
     private static class IDEApplicationListener implements ApplicationActivationListener {
 
         private final VirtualFileActivityHandler virtualFileActivityHandler;
+        private final ProjectContextHandler projectContextHandler;
         private DeactivationHandler deactivationHandler;
 
-        IDEApplicationListener(IFMController controller, VirtualFileActivityHandler virtualFileActivityHandler) {
+
+        IDEApplicationListener(IFMController controller, VirtualFileActivityHandler virtualFileActivityHandler, ProjectContextHandler projectContextHandler) {
             deactivationHandler = new DeactivationHandler(controller);
             this.virtualFileActivityHandler = virtualFileActivityHandler;
+            this.projectContextHandler = projectContextHandler;
         }
 
         @Override
         public void applicationActivated(IdeFrame ideFrame) {
             if (ideFrame.getProject() != null) {
                 deactivationHandler.activated();
+                projectContextHandler.updateContext(ideFrame.getProject());
 
                 FileEditorManager editorManager = FileEditorManager.getInstance(ideFrame.getProject());
                 if (editorManager != null) {
@@ -162,6 +181,7 @@ public class IdeaFlowApplicationComponent extends ApplicationComponent.Adapter {
         public void applicationDeactivated(IdeFrame ideFrame) {
             if (ideFrame.getProject() != null) {
                 deactivationHandler.deactivated();
+                projectContextHandler.updateContext(ideFrame.getProject());
 
                 FileEditorManager editorManager = FileEditorManager.getInstance(ideFrame.getProject());
                 if (editorManager != null) {

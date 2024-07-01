@@ -49,6 +49,9 @@ public class IdeaFlowProjectComponent implements ProjectComponent {
     }
 
     public void projectOpened() {
+        System.out.println("project opened = "+project.getName());
+        IdeaFlowApplicationComponent.getProjectContextHandler().updateContext(project);
+
         projectConnection = project.getMessageBus().connect();
         projectConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, fileListener);
         projectConnection.subscribe(ExecutionManager.EXECUTION_TOPIC, processExecutionListener);
@@ -56,6 +59,10 @@ public class IdeaFlowProjectComponent implements ProjectComponent {
 
     public void projectClosed() {
         projectConnection.disconnect();
+    }
+
+    public IdeaFlowApplicationComponent getApplicationComponent() {
+        return IdeaFlowApplicationComponent.getApplicationComponent();
     }
 
     private class FileListener implements FileEditorManagerListener {

@@ -1,6 +1,7 @@
 package net.twilightcity.flow.intellij.extension;
 
 import com.intellij.openapi.extensions.ExtensionPointName;
+import com.intellij.openapi.project.Project;
 import net.twilightcity.flow.config.FervieActionConfigManager;
 import net.twilightcity.flow.intellij.Logger;
 import net.twilightcity.flow.intellij.extension.api.FerviePopupByHotKeyAction;
@@ -45,7 +46,7 @@ public final class FervieExtensionPointService {
 	}
 
 
-	public void fireAction(String actionId) {
+	public void fireAction(Project projectContext, String actionId) {
 		log.debug("fire action: "+actionId);
 		FerviePopupByHotKeyAction action = actionMap.get(actionId);
 		if (action != null) {
