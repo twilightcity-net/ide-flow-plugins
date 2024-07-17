@@ -5,6 +5,8 @@ import com.intellij.openapi.project.Project;
 import net.twilightcity.flow.config.FervieActionConfigManager;
 import net.twilightcity.flow.intellij.Logger;
 import net.twilightcity.flow.intellij.extension.api.FerviePopupByHotKeyAction;
+import net.twilightcity.flow.intellij.extension.api.FileActivity;
+import net.twilightcity.flow.intellij.extension.api.FlowStateContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,11 +48,11 @@ public final class FervieExtensionPointService {
 	}
 
 
-	public void fireAction(Project projectContext, String actionId) {
+	public void fireAction(Project projectContext, String actionId, FlowStateContext flowStateContext) {
 		log.debug("fire action: "+actionId);
 		FerviePopupByHotKeyAction action = actionMap.get(actionId);
 		if (action != null) {
-			action.onFervieAction();
+			action.onFervieAction(flowStateContext);
 		} else {
 			log.warn("[FervieExtensionPointService] Action not found for id = "+actionId);
 		}
@@ -74,8 +76,15 @@ public final class FervieExtensionPointService {
 		}
 
 		@Override
-		public void onFervieAction() {
+		public void onFervieAction(FlowStateContext context) {
+
 			System.out.println("Fervie: \"Hello!\" action callback");
+			System.out.println("context: momentum = "+context.getCurrentMomentum());
+			System.out.println("context: flow state = "+context.getCurrentFlowState());
+			System.out.println("file activity size = "+ context.getMostRecentFileActivity().size());
+			for (FileActivity file : context.getMostRecentFileActivity()) {
+				System.out.println(file.getModule() + "::"+ file.getFilePath() + ":: " + file.getDurationInSeconds());
+			}
 		}
 	}
 

@@ -1,6 +1,7 @@
 package net.twilightcity.flow.action;
 
 import net.twilightcity.flow.Logger;
+import net.twilightcity.flow.action.data.FlowInsightActionContext;
 import net.twilightcity.flow.action.type.ActionType;
 import net.twilightcity.flow.action.type.GotoAction;
 import net.twilightcity.flow.action.type.RunAction;
@@ -75,12 +76,12 @@ public class ActionFileReader {
 
 	private Action createGotoActionFromJson(String jsonStr) throws IOException {
 		GotoActionProps props = jsonConverter.fromPlainJSON(jsonStr, GotoActionProps.class);
-		return new GotoAction(props.module, props.filePath, props.position );
+		return new GotoAction(props.module, props.filePath, props.position, null);
 	}
 
 	private Action createRunActionFromJson(String jsonStr) throws IOException {
 		RunActionProps props = jsonConverter.fromPlainJSON(jsonStr, RunActionProps.class);
-		return new RunAction(props.actionId, props.extensionName, props.position );
+		return new RunAction(props.actionId, props.extensionName, props.position, props.flowInsightActionContext );
 	}
 
 	private ActionType toActionType(String actionTypeStr) {
@@ -96,6 +97,7 @@ public class ActionFileReader {
 		private String actionId;
 		private String extensionName;
 		private LocalDateTime position;
+		private FlowInsightActionContext flowInsightActionContext;
 
 		public String getActionId() {
 			return actionId;
@@ -119,6 +121,14 @@ public class ActionFileReader {
 
 		public void setPosition(LocalDateTime position) {
 			this.position = position;
+		}
+
+		public FlowInsightActionContext getFlowInsightActionContext() {
+			return flowInsightActionContext;
+		}
+
+		public void setFlowInsightActionContext(FlowInsightActionContext flowInsightActionContext) {
+			this.flowInsightActionContext = flowInsightActionContext;
 		}
 	}
 

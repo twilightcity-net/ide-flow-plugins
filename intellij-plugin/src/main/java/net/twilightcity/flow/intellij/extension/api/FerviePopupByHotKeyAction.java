@@ -8,5 +8,5 @@ public interface FerviePopupByHotKeyAction {
 
 	String getFervieButtonTooltip();
 
-	void onFervieAction();
+	void onFervieAction(FlowStateContext flowStateContext);
 }

@@ -1,11 +1,10 @@
 package net.twilightcity.flow.intellij.extension.api;
 
+import java.util.List;
+
 public interface FlowStateContext {
 
-	//could potentially pass data here?  What would we want?
-
-	String getCurrentFlowState();
+	FlowStateType getCurrentFlowState();
 	Integer getCurrentMomentum();
-	String getMostRecentCodeArea();
-
+	List<FileActivity> getMostRecentFileActivity();
 }
