@@ -1,15 +1,15 @@
 package net.twilightcity.flow.activity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.twilightcity.gridtime.api.flow.activity.NewEditorActivityDto;
 import net.twilightcity.gridtime.api.flow.activity.NewExecutionActivityDto;
 import net.twilightcity.gridtime.api.flow.activity.NewExternalActivityDto;
 import net.twilightcity.gridtime.api.flow.activity.NewModificationActivityDto;
 import net.twilightcity.gridtime.api.flow.batch.NewFlowBatchEventDto;
 import net.twilightcity.gridtime.api.flow.event.NewSnippetEventDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.dreamscale.jackson.ObjectMapperBuilder;
+import net.twilightcity.jackson.ObjectMapperBuilder;
 
 import java.io.IOException;
 import java.util.HashMap;

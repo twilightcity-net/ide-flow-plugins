@@ -7,8 +7,8 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.twilightcity.flow.controller.IFMController;
-import net.twilightcity.flow.intellij.handler.VirtualFileActivityHandler;
 import net.twilightcity.flow.intellij.IdeaFlowApplicationComponent;
+import net.twilightcity.flow.intellij.handler.VirtualFileActivityHandler;
 
 public class ActionSupport {
 

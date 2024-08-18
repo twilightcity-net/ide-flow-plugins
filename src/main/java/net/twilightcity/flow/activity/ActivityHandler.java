@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ActivityHandler {
 
-    private static final int SHORTEST_ACTIVITY = 3;
+    static final int SHORTEST_ACTIVITY = 3;
 
     private IFMController controller;
     private MessageQueue messageQueue;

@@ -1,8 +1,7 @@
 package net.twilightcity.flow.intellij;
 
-import com.intellij.execution.ExecutionAdapter;
+import com.intellij.execution.ExecutionListener;
 import com.intellij.execution.ExecutionManager;
-import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.process.ProcessHandler;
 import com.intellij.execution.runners.ExecutionEnvironment;
 import com.intellij.openapi.components.ProjectComponent;
@@ -133,7 +132,7 @@ public class IdeaFlowProjectComponent implements ProjectComponent {
         }
     }
 
-    private class ProcessExecutionListener extends ExecutionAdapter {
+    private class ProcessExecutionListener implements ExecutionListener {
 
         private ProcessExecutionHandler handler;
 
@@ -142,15 +141,17 @@ public class IdeaFlowProjectComponent implements ProjectComponent {
         }
 
         @Override
-        public void processStarting(String executorId, @NotNull ExecutionEnvironment env) {
+        public void processStarting(@NotNull String executorId, @NotNull ExecutionEnvironment env) {
             handler.processStarting(executorId, env);
         }
 
-        public void processStarted(String executorId, @NotNull ExecutionEnvironment env, @NotNull ProcessHandler processHandler) {
+        @Override
+        public void processStarted(@NotNull String executorId, @NotNull ExecutionEnvironment env, @NotNull ProcessHandler processHandler) {
             handler.processStarted(env, processHandler);
         }
 
-        public void processTerminated(@NotNull RunProfile runProfile, @NotNull ProcessHandler processHandler) {
+        @Override
+        public void processTerminated(@NotNull String executorId, @NotNull ExecutionEnvironment env, @NotNull ProcessHandler processHandler, int exitCode) {
             handler.processTerminated(processHandler);
         }
     }

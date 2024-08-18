@@ -2,8 +2,7 @@ package net.twilightcity.flow.intellij.action.event;
 
 //import com.intellij.debugger.actions.ViewAsGroup;
 //import com.intellij.debugger.engine.JavaValue;
-import net.twilightcity.flow.controller.IFMController;
-import net.twilightcity.gridtime.api.flow.event.SnippetSourceType;
+
 import com.intellij.execution.impl.ConsoleViewUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -12,8 +11,10 @@ import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import net.twilightcity.flow.controller.IFMController;
 import net.twilightcity.flow.intellij.action.ActionSupport;
 import net.twilightcity.flow.intellij.action.SelectedSnippet;
+import net.twilightcity.gridtime.api.flow.event.SnippetSourceType;
 
 public class CreateSnippetEvent extends AnAction {
 

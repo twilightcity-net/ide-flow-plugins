@@ -1,9 +1,10 @@
 package net.twilightcity.flow.activity
 
+import net.twilightcity.flow.config.ModuleManager
+import net.twilightcity.flow.controller.IFMController
 import net.twilightcity.gridtime.api.flow.activity.NewEditorActivityDto
 import net.twilightcity.gridtime.api.flow.activity.NewExecutionActivityDto
 import net.twilightcity.gridtime.api.flow.activity.NewModificationActivityDto
-import net.twilightcity.flow.controller.IFMController
 import net.twilightcity.time.MockTimeService
 import spock.lang.Ignore
 import spock.lang.Specification
@@ -16,14 +17,16 @@ class TestActivityHandler extends Specification {
     ActivityHandler handler
     InMemoryMessageLogger messageLogger
     IFMController controller = Mock(IFMController)
+    ModuleManager moduleManager = Mock(ModuleManager)
     MockTimeService timeService = new MockTimeService()
 
     void setup() {
         messageLogger = new InMemoryMessageLogger()
-        MessageQueue activityQueue = new MessageQueue(messageLogger, timeService)
+        MessageQueue activityQueue = new MessageQueue(messageLogger, timeService, moduleManager)
         handler = new ActivityHandler(controller, activityQueue, timeService)
 
         controller.isActive() >> true
+        moduleManager.isModuleEnabled(_) >> true
     }
 
     void testStartEvent_ShouldNotCreateEditorActivity_IfNoPriorEvent() {

@@ -1,7 +1,6 @@
 package net.twilightcity.flow.config;
 
 import net.twilightcity.flow.Logger;
-import net.twilightcity.flow.config.FlowInsightConfig;
 
 import java.util.ArrayList;
 import java.util.HashSet;

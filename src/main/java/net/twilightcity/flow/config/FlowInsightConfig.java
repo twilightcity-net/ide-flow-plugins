@@ -33,7 +33,7 @@ public class FlowInsightConfig {
                 contentBuilder.append(sCurrentLine).append("\n");
             }
 
-            return (ModuleConfigSet) jsonConverter.fromPlainJSON(contentBuilder.toString(), FlowInsightConfig.ModuleConfigSet.class);
+            return (ModuleConfigSet) jsonConverter.fromPlainJSON(contentBuilder.toString(), ModuleConfigSet.class);
         }
 
         catch (IOException e)
