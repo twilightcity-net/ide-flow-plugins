@@ -50,7 +50,10 @@
         </action>
 
         <group id="net.twilightcity.flow.MainToolBar" text="Flow Group" description="Flow action group">
-            <add-to-group group-id="MainToolBar" anchor="first"/>
+            <!-- ToolbarRunGroup is for classic UI, MainToolbarRight is for new UI, might be one that
+                 works for both but I couldn't find it -->
+            <add-to-group group-id="ToolbarRunGroup" anchor="first"/>
+            <add-to-group group-id="MainToolbarRight" anchor="first"/>
             <reference ref="net.twilightcity.flow.FlushBatch"/>
             <separator/>
         </group>
