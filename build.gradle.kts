@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("groovy")
+    id("org.jetbrains.kotlin.jvm") version "1.9.24"
     id("org.jetbrains.intellij") version "1.17.3"
 }
 
@@ -18,9 +19,6 @@ repositories {
 
 dependencies {
     implementation("net.twilightcity:gridtime-rest-client:${project.properties["gridtime.version"]}")
-    compileOnly("org.projectlombok:lombok:1.18.2")
-
-//    testImplementation("net.twilightcity:gridtime-rest-client-test:${project.properties["gridtime.version"]}")
 
     testImplementation("org.slf4j:slf4j-api:2.0.16")
     testImplementation("com.google.guava:guava:33.3.0-jre")
@@ -48,6 +46,10 @@ tasks {
     withType<JavaCompile> {
         sourceCompatibility = "17"
         targetCompatibility = "17"
+    }
+
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "17"
     }
 
     withType<Test>().configureEach {

@@ -48,7 +48,7 @@ public final class FervieExtensionPointService {
 	}
 
 
-	public void fireAction(Project projectContext, String actionId, FlowStateContext flowStateContext) {
+	public void fireAction(String actionId, FlowStateContext flowStateContext) {
 		log.debug("fire action: "+actionId);
 		FerviePopupByHotKeyAction action = actionMap.get(actionId);
 		if (action != null) {
