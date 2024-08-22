@@ -7,7 +7,7 @@ import com.intellij.openapi.editor.SelectionModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import net.twilightcity.flow.controller.IFMController;
-import net.twilightcity.flow.intellij.IdeaFlowApplicationComponent;
+import net.twilightcity.flow.intellij.FlowInsightMetricsAppService;
 import net.twilightcity.flow.intellij.handler.VirtualFileActivityHandler;
 
 public class ActionSupport {
@@ -15,7 +15,7 @@ public class ActionSupport {
     public static IFMController getIFMController(AnActionEvent e) {
         IFMController controller = null;
         if (e != null && e.getProject() != null) {
-            controller = IdeaFlowApplicationComponent.getIFMController();
+            controller = FlowInsightMetricsAppService.getInstance().getController();
         }
         return controller;
     }

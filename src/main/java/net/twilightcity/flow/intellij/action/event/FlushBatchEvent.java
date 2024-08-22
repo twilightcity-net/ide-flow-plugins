@@ -2,8 +2,9 @@ package net.twilightcity.flow.intellij.action.event;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.ui.Messages;
 import net.twilightcity.flow.controller.IFMController;
-import net.twilightcity.flow.intellij.IdeaFlowApplicationComponent;
+import net.twilightcity.flow.intellij.FlowInsightMetricsAppService;
 import net.twilightcity.flow.intellij.Logger;
 import net.twilightcity.flow.intellij.action.ActionSupport;
 
@@ -20,7 +21,7 @@ public class FlushBatchEvent extends AnAction {
                     controller.start();
                 } catch (Exception ex) {
                     log.error("Failed to initialize Flow component", ex);
-                    IdeaFlowApplicationComponent.showErrorMessage("Failed to initialize Flow component", ex.getMessage());
+                    Messages.showErrorDialog(ex.getMessage(), "Failed to Initialize Flow Component");
                 }
             }
             if (controller.isActive()) {
@@ -28,7 +29,7 @@ public class FlushBatchEvent extends AnAction {
                     controller.flushBatch();
                 } catch (Exception ex) {
                     log.error("Failed to flush Flow events", ex);
-                    IdeaFlowApplicationComponent.showErrorMessage("Failed to flush Flow events", ex.getMessage());
+                    Messages.showErrorDialog(ex.getMessage(), "Failed to Flush Flow Events");
                 }
             }
         }

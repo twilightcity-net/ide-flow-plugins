@@ -25,19 +25,6 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
 
-    <!-- TODO: deprecated, investigate dynamic extension -->
-    <application-components>
-        <component>
-            <implementation-class>net.twilightcity.flow.intellij.IdeaFlowApplicationComponent</implementation-class>
-        </component>
-    </application-components>
-
-    <project-components>
-        <component>
-            <implementation-class>net.twilightcity.flow.intellij.IdeaFlowProjectComponent</implementation-class>
-        </component>
-    </project-components>
-
     <actions>
         <action id="net.twilightcity.flow.Snippet" class="net.twilightcity.flow.intellij.action.event.CreateSnippetEvent" text="Send Snippet to FlowInsight"
                 description="Sends the currently selected snippet to the active FlowInsight window" icon="/icons/take_note.png">
@@ -64,7 +51,7 @@
             <separator/>
             <reference ref="net.twilightcity.flow.Snippet"/>
         </group>
-
+                         
         <group id="net.twilightcity.flow.DebuggerPopupMenu">
             <add-to-group group-id="XDebugger.Watches.Tree.Popup" anchor="last"/>
             <separator/>
@@ -75,12 +62,20 @@
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
-    <extensionPoints>
-        <extensionPoint
-                name="ferviePopupByHotkey"
-                interface="net.twilightcity.flow.intellij.extension.api.FerviePopupByHotKeyAction"
-                dynamic="false"/>
-    </extensionPoints>
+<!--    <extensionPoints>-->
+<!--        <extensionPoint-->
+<!--                name="ferviePopupByHotkey"-->
+<!--                interface="net.twilightcity.flow.intellij.extension.api.FerviePopupByHotKeyAction"-->
+<!--                dynamic="false"/>-->
+<!--    </extensionPoints>-->
 
+    <applicationListeners>
+        <listener class="net.twilightcity.flow.intellij.FlowInsightMetricsAppService$IdeActivationListener"
+                  topic="com.intellij.openapi.application.ApplicationActivationListener"/>
+    </applicationListeners>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="net.twilightcity.flow.intellij.ProjectOpenStartupActivity"/>
+    </extensions>
 
 </idea-plugin>

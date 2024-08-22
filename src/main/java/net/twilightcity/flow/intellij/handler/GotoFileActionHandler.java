@@ -13,7 +13,10 @@ public class GotoFileActionHandler {
 		this.log = logger;
 
 	}
-	public void fireAction(Project activeProjectContext, String moduleName, String filePath) {
+	public void fireAction(String moduleName, String filePath) {
+		// TODO: figure out what the purpose is... the caller doesn't have access to the project, so
+		// may need to redesign
+		Project activeProjectContext = null;
 		log.debug("[GotoFileActionHandler] fireAction goto file: "+filePath);
 		//TODO maybe what I can do with this is construct the full path from finding a matching module
 		// I can walk the set of open projects and look for a matching module with any of them

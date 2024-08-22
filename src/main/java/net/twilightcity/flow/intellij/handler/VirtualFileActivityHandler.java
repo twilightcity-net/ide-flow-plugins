@@ -7,6 +7,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import net.twilightcity.flow.activity.ActivityHandler;
 import net.twilightcity.flow.activity.LastLocationTracker;
 import net.twilightcity.flow.config.ModuleManager;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class VirtualFileActivityHandler {
 
@@ -24,7 +26,7 @@ public class VirtualFileActivityHandler {
         this.lastLocationTracker = lastLocationTracker;
     }
 
-    public void startFileEvent(Project project, VirtualFile file) {
+    public void startFileEvent(@NotNull Project project, @Nullable VirtualFile file) {
         String filePath = getFilePath(project, file);
         String moduleName = getModuleName(project, file);
         requestModuleAccess(moduleName, project, file);
