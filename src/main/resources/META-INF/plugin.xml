@@ -1,0 +1,86 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>net.twilightcity.flow</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>FlowInsight Metrics</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="info@flowinsight.com" url="https://www.flowinsight.com">FlowInsight</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description>
+        Capture automated Flow activity from your developer experience as you navigate around the code,
+        modify code, and execute tests.  IDE activity is spooled to a .flow file in your ~/.flow/plugins/com.jetbrains.intellij directory.
+        This plugin is open source, under an Apache 2 License.
+
+        Designed to work with FlowInsight developer flow console, available at flowinsight.com.
+    </description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- TODO: deprecated, investigate dynamic extension -->
+    <application-components>
+        <component>
+            <implementation-class>net.twilightcity.flow.intellij.IdeaFlowApplicationComponent</implementation-class>
+        </component>
+    </application-components>
+
+    <project-components>
+        <component>
+            <implementation-class>net.twilightcity.flow.intellij.IdeaFlowProjectComponent</implementation-class>
+        </component>
+    </project-components>
+
+    <actions>
+        <action id="net.twilightcity.flow.Snippet" class="net.twilightcity.flow.intellij.action.event.CreateSnippetEvent" text="Send Snippet to FlowInsight"
+                description="Sends the currently selected snippet to the active FlowInsight window" icon="/icons/take_note.png">
+            <keyboard-shortcut keymap="$default" first-keystroke="meta shift s"/>
+        </action>
+
+        <action id="net.twilightcity.flow.FlushBatch" class="net.twilightcity.flow.intellij.action.event.FlushBatchEvent" text="Upload to FlowInsight"
+                description="Flushes all the most recent Flow activity to FlowInsight"
+                icon="/icons/upload_flow_icon.svg">
+        </action>
+
+        <group id="net.twilightcity.flow.MainToolBar" text="Flow Group" description="Flow action group">
+            <!-- ToolbarRunGroup is for classic UI, MainToolbarRight is for new UI, might be one that
+                 works for both but I couldn't find it -->
+            <add-to-group group-id="ToolbarRunGroup" anchor="first"/>
+            <add-to-group group-id="MainToolbarRight" anchor="first"/>
+            <reference ref="net.twilightcity.flow.FlushBatch"/>
+            <separator/>
+        </group>
+
+        <group id="net.twilightcity.flow.EditorPopupMenu">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="ConsoleEditorPopupMenu" anchor="last"/>
+            <separator/>
+            <reference ref="net.twilightcity.flow.Snippet"/>
+        </group>
+
+        <group id="net.twilightcity.flow.DebuggerPopupMenu">
+            <add-to-group group-id="XDebugger.Watches.Tree.Popup" anchor="last"/>
+            <separator/>
+            <reference ref="net.twilightcity.flow.Snippet"/>
+        </group>
+
+    </actions>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensionPoints>
+        <extensionPoint
+                name="ferviePopupByHotkey"
+                interface="net.twilightcity.flow.intellij.extension.api.FerviePopupByHotKeyAction"
+                dynamic="false"/>
+    </extensionPoints>
+
+
+</idea-plugin>
