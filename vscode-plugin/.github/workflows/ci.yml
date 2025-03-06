@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'vscode-plugin/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'vscode-plugin/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./vscode-plugin
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: './vscode-plugin/package.json'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Compile
+      run: npm run compile
+
+    - name: Run unit tests
+      run: npm run test:unit
+
+    - name: Run integration tests
+      run: xvfb-run -a npm run test:integration
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v2
+      with:
+        files: ./vscode-plugin/coverage/lcov.info
+        fail_ci_if_error: true
+
+  package:
+    needs: build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./vscode-plugin
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16.x'
+        cache: 'npm'
+        cache-dependency-path: './vscode-plugin/package.json'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Install vsce
+      run: npm install -g vsce
+
+    - name: Package extension
+      run: vsce package
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: flowinsight-extension
+        path: "vscode-plugin/*.vsix" 
