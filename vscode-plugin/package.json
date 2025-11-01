@@ -22,6 +22,11 @@
                 "icon": "$(cloud-upload)"
             },
             {
+                "command": "flowinsight.createSnippet",
+                "title": "Send Snippet to FlowInsight",
+                "icon": "$(note)"
+            },
+            {
                 "command": "flowinsight.registerFervieAction",
                 "title": "Register a Fervie Action"
             }
@@ -32,8 +37,28 @@
                     "command": "flowinsight.uploadFlow",
                     "group": "navigation"
                 }
+            ],
+            "editor/context": [
+                {
+                    "command": "flowinsight.createSnippet",
+                    "when": "editorHasSelection",
+                    "group": "navigation"
+                }
             ]
-        }
+        },
+        "keybindings": [
+            {
+                "command": "flowinsight.createSnippet",
+                "key": "cmd+shift+s",
+                "mac": "cmd+shift+s",
+                "when": "editorTextFocus && editorHasSelection"
+            },
+            {
+                "command": "flowinsight.createSnippet",
+                "key": "ctrl+shift+s",
+                "when": "editorTextFocus && editorHasSelection"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

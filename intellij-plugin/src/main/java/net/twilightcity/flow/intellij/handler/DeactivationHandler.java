@@ -19,10 +19,8 @@ public class DeactivationHandler {
     }
 
     public void activated() {
-        if (controller.isInactive()) {
-            return;
-        }
-
+        // Always track deactivation activity, regardless of controller state
+        // This ensures context switching is recorded even if API settings are missing
         Duration deactivationDuration = getDeactivationDuration();
         if (deactivationDuration == null) {
             return;

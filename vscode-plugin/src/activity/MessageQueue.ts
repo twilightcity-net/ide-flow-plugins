@@ -45,7 +45,7 @@ export class MessageQueue {
 
         if (!module || this.moduleManager.isModuleEnabled(module)) {
             const activity = {
-                durationInSeconds,
+                durationInSeconds: Math.round(durationInSeconds),
                 endTime,
                 module,
                 filePath,
@@ -57,7 +57,7 @@ export class MessageQueue {
 
     public pushModificationActivity(durationInSeconds: number, modificationCount: number): void {
         const activity = {
-            durationInSeconds,
+            durationInSeconds: Math.round(durationInSeconds),
             endTime: this.timeService.now(),
             modificationCount
         };
@@ -72,7 +72,7 @@ export class MessageQueue {
         isDebug: boolean
     ): void {
         const activity = {
-            durationInSeconds,
+            durationInSeconds: Math.round(durationInSeconds),
             endTime: this.timeService.now(),
             processName,
             exitCode,
@@ -84,15 +84,28 @@ export class MessageQueue {
 
     public pushExternalActivity(durationInSeconds: number, comment: string): void {
         const activity = {
-            durationInSeconds,
+            durationInSeconds: Math.round(durationInSeconds),
             endTime: this.timeService.now(),
             comment
         };
         this.writeMessage('ExternalActivity', activity);
     }
 
-    private writeMessage(type: string, data: any): void {
-        const message = `${type}=${JSON.stringify(data)}\n`;
+    public pushEvent(eventType: string, message: string): void {
+        const event = {
+            type: eventType,
+            position: this.timeService.now(),
+            comment: message
+        };
+        this.writeMessage('Event', event);
+    }
+
+    public flush(): void {
+        // No-op: The FlowPublisher will handle committing the active file
+    }
+
+    private writeMessage(_type: string, data: any): void {
+        const message = `${this.jsonConverter.toJSON(data)}\n`;
         fs.appendFileSync(this.activeFlowFile, message);
     }
 } 

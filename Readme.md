@@ -86,4 +86,26 @@ You can do this from within the "Open Module Settings" dialog under "SDKs" first
 
 If you do not have the common edition, you'll need to download and install it on your machine.  Then from this dialog click "New > Intellij Platform SDK" and navigate to the ".app" file for the installation.
 
+# FlowInsight VSCode Extension
+
+Track and analyze your development activities with FlowInsight integration for Visual Studio Code. This extension captures your coding activities, test executions, and workflow patterns to help improve productivity and understand your development process.
+
+## Features
+
+- **Activity Tracking**: Automatically tracks time spent viewing and editing files
+- **Test Execution Monitoring**: Records test runs and their outcomes
+- **Code Modification Tracking**: Monitors code changes and modification patterns
+- **External Activity Logging**: Tracks when VSCode loses/gains focus
+- **Fervie Action System**: Support for custom workflow actions
+- **Automatic Data Publishing**: Periodically uploads activity data to FlowInsight
+
+## Installation
+
+1. Install from VS Code Marketplace or download the VSIX file
+2. Configure your FlowInsight credentials (if using the publishing feature)
+
+## Configuration
+
+The extension creates a `.flow` directory in your home folder with the following structure:
+
 

@@ -4,6 +4,17 @@ import { Logger } from '../Logger';
 import { TimeService } from '../time/TimeService';
 import { JSONConverter } from './JSONConverter';
 
+export class NotFoundError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'NotFoundError';
+    }
+}
+
+export interface FlowClient {
+    publishBatch(batch: any): Promise<void>;
+}
+
 export class FlowPublisher {
     private static readonly BATCH_PUBLISH_FREQUENCY_MS = 30000;
     private static readonly FILE_MODIFIER = '.' + Math.random().toString(36).substring(2);
@@ -13,6 +24,7 @@ export class FlowPublisher {
     private jsonConverter = new JSONConverter();
     private failedFileToLastDayRetriedMap = new Map<string, number>();
     private publishingLock: PublishingLock;
+    private flowClient?: FlowClient;
 
     constructor(
         private baseDir: string,
@@ -33,11 +45,13 @@ export class FlowPublisher {
         this.commitActiveFile();
 
         // Move retry files to publish directory
-        for (const file of fs.readdirSync(this.retryNextSessionDir)) {
-            this.moveFileToDir(
-                path.join(this.retryNextSessionDir, file),
-                this.publishDir
-            );
+        if (fs.existsSync(this.retryNextSessionDir)) {
+            for (const file of fs.readdirSync(this.retryNextSessionDir)) {
+                this.moveFileToDir(
+                    path.join(this.retryNextSessionDir, file),
+                    this.publishDir
+                );
+            }
         }
 
         if (!this.publishThread) {
@@ -45,12 +59,21 @@ export class FlowPublisher {
         }
     }
 
-    public flush(): void {
-        this.failedFileToLastDayRetriedMap.clear();
-        if (this.publishThread) {
-            clearInterval(this.publishThread);
-            this.publishThread = undefined;
+    public setFlowClient(flowClient: FlowClient): void {
+        this.flowClient = flowClient;
+    }
+
+    public async flush(): Promise<void> {
+        // Commit active file to publish directory
+        this.commitActiveFile();
+        
+        // Publish any pending batches immediately
+        if (this.hasSomethingToPublish()) {
+            await this.acquireLockAndPublishBatches();
         }
+        
+        // Clear failed retry map
+        this.failedFileToLastDayRetriedMap.clear();
     }
 
     public close(): void {
@@ -109,7 +132,8 @@ export class FlowPublisher {
             fs.unlinkSync(batchFile);
         } catch (error) {
             const errorMessage = (error as Error).message;
-            if (errorMessage.includes('404')) {
+            // Check for NotFoundError (404) - task not found, retry next session
+            if (error instanceof NotFoundError || errorMessage.includes('404') || errorMessage.includes('not found')) {
                 this.moveFileToDir(batchFile, this.retryNextSessionDir);
                 this.logger.info(`Failed to publish ${batchFile} due to missing task, will retry in future session...`);
             } else {
@@ -175,8 +199,42 @@ export class FlowPublisher {
     }
 
     private async publishBatch(batch: FlowBatch): Promise<void> {
-        // TODO: Implement actual publishing logic when we have the server API
-        this.logger.info(`Publishing batch with ${batch.getActivityCount()} activities`);
+        if (!this.flowClient) {
+            throw new Error('FlowClient is not set. Cannot publish batch.');
+        }
+
+        if (batch.isEmpty()) {
+            return;
+        }
+
+        // Convert FlowBatch to the format expected by the API
+        const batchDto = this.convertBatchToDto(batch);
+        
+        try {
+            await this.flowClient.publishBatch(batchDto);
+            this.logger.debug(`Successfully published batch with ${batch.getActivityCount()} activities`);
+        } catch (error) {
+            // Check if it's a NotFoundError (404) - task not found, should retry next session
+            if (error instanceof Error && (error.name === 'NotFoundError' || error.message.includes('not found') || error.message.includes('404'))) {
+                throw new NotFoundError(error.message);
+            }
+            // Re-throw other errors for failure handling
+            throw error;
+        }
+    }
+
+    private convertBatchToDto(batch: FlowBatch): any {
+        // Convert the batch to the format expected by the API
+        // Based on NewFlowBatchDto structure from Java
+        const activities = batch.getActivities().map(activity => {
+            // The activity is already in the correct format from JSONConverter
+            return activity.data;
+        });
+
+        return {
+            timeSent: batch.getTimeSent(),
+            activities: activities
+        };
     }
 }
 
@@ -226,5 +284,13 @@ class FlowBatch {
 
     getActivityCount(): number {
         return this.activities.length;
+    }
+
+    getActivities(): Array<{ type: string; data: any }> {
+        return this.activities;
+    }
+
+    getTimeSent(): Date {
+        return this.timeSent;
     }
 } 

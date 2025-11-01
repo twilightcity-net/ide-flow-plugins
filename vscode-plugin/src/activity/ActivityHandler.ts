@@ -39,7 +39,7 @@ export class ActivityHandler {
                 if (duration > 0) {
                     const endTime = new Date(this.timeService.now().getTime() - (idleDurationSeconds * 1000));
                     this.messageQueue.pushEditorActivity(
-                        duration,
+                        Math.round(duration),
                         endTime,
                         this.activeFileActivity.filePath,
                         this.activeFileActivity.module,
@@ -48,7 +48,7 @@ export class ActivityHandler {
                 }
             }
             
-            this.messageQueue.pushExternalActivity(idleDurationSeconds, comment);
+            this.messageQueue.pushExternalActivity(Math.round(idleDurationSeconds), comment);
             
             if (this.activeFileActivity) {
                 this.activeFileActivity = this.createFileActivity(
@@ -147,6 +147,6 @@ export class ActivityHandler {
     }
 
     private getDurationSeconds(startTime: Date): number {
-        return Math.floor((this.timeService.now().getTime() - startTime.getTime()) / 1000);
+        return Math.round((this.timeService.now().getTime() - startTime.getTime()) / 1000);
     }
 } 

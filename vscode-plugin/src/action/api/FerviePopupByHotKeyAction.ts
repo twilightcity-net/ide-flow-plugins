@@ -1,3 +1,15 @@
+export interface FlowStateContext {
+    getCurrentFlowState(): string;
+    getCurrentMomentum(): number | null;
+    getMostRecentFileActivity(): FileActivity[];
+}
+
+export interface FileActivity {
+    getModule(): string;
+    getFilePath(): string;
+    getDurationInSeconds(): number;
+}
+
 export interface FerviePopupByHotKeyAction {
     /**
      * Get the unique identifier for this action
@@ -17,5 +29,5 @@ export interface FerviePopupByHotKeyAction {
     /**
      * Called when the Fervie action is triggered
      */
-    onFervieAction(): void;
+    onFervieAction(flowStateContext: FlowStateContext): void;
 } 

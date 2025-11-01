@@ -33,7 +33,15 @@ export class FervieExtensionPointManager {
             // Create command for this action
             const disposable = vscode.commands.registerCommand(
                 `flowinsight.fervie.${actionId}`,
-                () => action.onFervieAction()
+                () => {
+                    // Create a default FlowStateContext
+                    const flowStateContext = {
+                        getCurrentFlowState: () => 'FLOW',
+                        getCurrentMomentum: () => null,
+                        getMostRecentFileActivity: () => []
+                    };
+                    action.onFervieAction(flowStateContext);
+                }
             );
             this.context.subscriptions.push(disposable);
 

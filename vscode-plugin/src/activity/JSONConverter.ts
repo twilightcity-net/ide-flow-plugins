@@ -25,15 +25,41 @@ export class JSONConverter {
             throw new Error(`Unable to find type for object: ${JSON.stringify(object)}`);
         }
 
-        // Format dates in ISO format
-        const processed = JSON.stringify(object, (key, value) => {
-            if (value instanceof Date) {
-                return format(value, "yyyy-MM-dd'T'HH:mm:ss");
-            }
-            return value;
-        });
+        // Format dates in ISO format (local time, no timezone, no milliseconds)
+        // This matches Java's LocalDateTime serialization format
+        // Note: We need to replace Date objects with strings BEFORE JSON.stringify
+        // because Date.prototype.toJSON() is called automatically and returns toISOString()
+        const processed = JSON.stringify(this.replaceDates(object));
 
         return `${type}=${processed}`;
+    }
+
+    private replaceDates(obj: any): any {
+        if (obj instanceof Date) {
+            // Use date-fns format which formats in local timezone (matching Java LocalDateTime)
+            // Format: "yyyy-MM-dd'T'HH:mm:ss" (no timezone, no milliseconds)
+            return format(obj, "yyyy-MM-dd'T'HH:mm:ss");
+        }
+        
+        if (obj === null || obj === undefined) {
+            return obj;
+        }
+        
+        if (Array.isArray(obj)) {
+            return obj.map(item => this.replaceDates(item));
+        }
+        
+        if (typeof obj === 'object') {
+            const result: any = {};
+            for (const key in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                    result[key] = this.replaceDates(obj[key]);
+                }
+            }
+            return result;
+        }
+        
+        return obj;
     }
 
     private getTypeForObject(object: any): string | undefined {

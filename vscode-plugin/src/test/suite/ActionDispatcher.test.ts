@@ -53,12 +53,12 @@ suite('ActionDispatcher Tests', () => {
         // Arrange
         const action = {
             type: 'UNKNOWN' as ActionType,
-            data: {}
+            data: {} as any
         };
 
         // Act & Assert
         await assert.doesNotThrow(async () => {
-            await dispatcher.dispatch(action);
+            await dispatcher.dispatch(action as Action);
         });
     });
 }); 

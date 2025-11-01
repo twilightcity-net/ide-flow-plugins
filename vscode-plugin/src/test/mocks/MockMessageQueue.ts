@@ -1,3 +1,9 @@
+import { MessageQueue } from '../../activity/MessageQueue';
+import { TimeService } from '../../time/TimeService';
+import { ModuleManager } from '../../config/ModuleManager';
+import * as path from 'path';
+import * as os from 'os';
+
 interface EditorActivity {
     durationInSeconds: number;
     endTime: Date;
@@ -22,24 +28,50 @@ interface ExecutionActivity {
 }
 
 export class MockMessageQueue {
+    public jsonConverter = { toJSON: () => '' };
+    public timeService: TimeService;
+    public moduleManager: ModuleManager;
+    public activeFlowFile: string;
+    
     editorActivities: EditorActivity[] = [];
     externalActivities: ExternalActivity[] = [];
     executionActivities: ExecutionActivity[] = [];
 
+    constructor(timeService?: TimeService, moduleManager?: ModuleManager, activeFlowFile?: string) {
+        this.timeService = timeService || new TimeService();
+        this.moduleManager = moduleManager || new ModuleManager(path.join(os.homedir(), '.flow', 'plugins', 'com.microsoft.vscode'), {
+            info: () => {},
+            error: () => {},
+            debug: () => {},
+            warn: () => {}
+        } as any);
+        this.activeFlowFile = activeFlowFile || path.join(os.tmpdir(), 'test-active.flow');
+    }
+
     pushEditorActivity(
         durationInSeconds: number,
-        endTime: Date,
-        filePath: string,
-        module: string | undefined,
-        modified: boolean
+        endTimeOrFilePath: Date | string,
+        filePathOrModule: string,
+        moduleOrModified?: string | boolean,
+        isModified?: boolean
     ): void {
+        const isEndTimeVersion = endTimeOrFilePath instanceof Date;
+        const endTime = isEndTimeVersion ? endTimeOrFilePath : new Date();
+        const filePath = isEndTimeVersion ? filePathOrModule : endTimeOrFilePath as string;
+        const module = isEndTimeVersion ? moduleOrModified as string | undefined : filePathOrModule;
+        const modified = isEndTimeVersion ? isModified : moduleOrModified as boolean;
+        
         this.editorActivities.push({
             durationInSeconds,
             endTime,
             module,
             filePath,
-            modified
+            modified: modified || false
         });
+    }
+
+    pushModificationActivity(_durationInSeconds: number, _modificationCount: number): void {
+        // No-op for tests
     }
 
     pushExternalActivity(durationInSeconds: number, comment: string): void {
@@ -65,5 +97,13 @@ export class MockMessageQueue {
             executionTaskType,
             debug: isDebug
         });
+    }
+
+    pushEvent(_eventType: string, _message: string): void {
+        // No-op for tests
+    }
+
+    flush(): void {
+        // No-op for tests
     }
 } 

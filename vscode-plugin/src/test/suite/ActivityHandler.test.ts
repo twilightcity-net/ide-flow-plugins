@@ -13,7 +13,7 @@ suite('ActivityHandler Tests', () => {
     setup(() => {
         messageQueue = new MockMessageQueue();
         timeService = new MockTimeService();
-        activityHandler = new ActivityHandler(messageQueue, timeService);
+        activityHandler = new ActivityHandler(messageQueue as any, timeService);
     });
 
     test('should track file activity over minimum threshold', () => {

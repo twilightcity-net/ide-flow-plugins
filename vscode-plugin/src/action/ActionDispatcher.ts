@@ -4,14 +4,22 @@ import { RunAction } from './type/RunAction';
 import { FileActivityActionContext } from './data/FileActivityActionContext';
 import { FlowInsightActionContext } from './data/FlowInsightActionContext';
 import { Logger } from '../Logger';
+import { FervieExtensionPointManager } from './FervieExtensionPointManager';
 
 export class ActionDispatcher {
     private gotoAction: GotoAction;
     private runAction: RunAction;
 
-    constructor(private logger: Logger) {
+    constructor(
+        private logger: Logger,
+        extensionPointManager?: FervieExtensionPointManager
+    ) {
         this.gotoAction = new GotoAction(logger);
-        this.runAction = new RunAction(logger);
+        this.runAction = new RunAction(logger, extensionPointManager);
+    }
+
+    public setExtensionPointManager(extensionPointManager: FervieExtensionPointManager): void {
+        this.runAction = new RunAction(this.logger, extensionPointManager);
     }
 
     async dispatch(action: Action): Promise<void> {

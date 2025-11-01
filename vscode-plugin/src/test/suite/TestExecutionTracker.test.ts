@@ -12,7 +12,7 @@ suite('TestExecutionTracker Tests', () => {
 
     setup(() => {
         messageQueue = new MockMessageQueue();
-        activityHandler = new ActivityHandler(messageQueue, new TimeService());
+        activityHandler = new ActivityHandler(messageQueue as any, new TimeService());
         tracker = new TestExecutionTracker(activityHandler);
     });
 

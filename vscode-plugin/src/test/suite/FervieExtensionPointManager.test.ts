@@ -13,8 +13,26 @@ suite('FervieExtensionPointManager Tests', () => {
     setup(() => {
         logger = new Logger();
         context = {
-            subscriptions: []
-        } as vscode.ExtensionContext;
+            subscriptions: [],
+            workspaceState: {} as any,
+            globalState: {} as any,
+            secrets: {} as any,
+            extensionUri: {} as any,
+            extensionPath: '',
+            globalStorageUri: {} as any,
+            workspaceStorageUri: {} as any,
+            storageUri: {} as any,
+            extensionMode: {} as any,
+            environmentVariableCollection: {} as any,
+            asAbsolutePath: () => '',
+            extension: {} as any,
+            logPath: '',
+            logUri: {} as any,
+            outputChannel: {} as any,
+            languageModelAccessInformation: {} as any,
+            storagePath: '',
+            globalStoragePath: ''
+        } as unknown as vscode.ExtensionContext;
 
         testAction = {
             getActionId: () => 'test.action',

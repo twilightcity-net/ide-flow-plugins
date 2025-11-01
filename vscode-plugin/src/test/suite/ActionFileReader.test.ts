@@ -4,6 +4,8 @@ import * as path from 'path';
 import { ActionFileReader } from '../../action/ActionFileReader';
 import { ActionType } from '../../action/type/ActionType';
 import { Logger } from '../../Logger';
+import { FileActivityActionContext } from '../../action/data/FileActivityActionContext';
+import { FlowInsightActionContext } from '../../action/data/FlowInsightActionContext';
 
 suite('ActionFileReader Tests', () => {
     let reader: ActionFileReader;
@@ -33,7 +35,8 @@ suite('ActionFileReader Tests', () => {
         // Assert
         assert.strictEqual(actions.length, 1);
         assert.strictEqual(actions[0].type, ActionType.GOTO);
-        assert.strictEqual(actions[0].data.filePath, '/test/file.ts');
+        const fileContext = actions[0].data as FileActivityActionContext;
+        assert.strictEqual(fileContext.filePath, '/test/file.ts');
     });
 
     test('should read RUN action', async () => {
@@ -47,7 +50,8 @@ suite('ActionFileReader Tests', () => {
         // Assert
         assert.strictEqual(actions.length, 1);
         assert.strictEqual(actions[0].type, ActionType.RUN);
-        assert.strictEqual(actions[0].data.actionId, 'test.command');
+        const flowContext = actions[0].data as FlowInsightActionContext;
+        assert.strictEqual(flowContext.actionId, 'test.command');
     });
 
     test('should handle invalid action format', async () => {
